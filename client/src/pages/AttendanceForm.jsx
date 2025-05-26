@@ -21,9 +21,16 @@ const AttendanceForm = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        const payload = {
+            name: formData.name,
+            pid: formData.pid,
+            eventName: formData.event,
+            eventDate: new Date().toISOString(), // or let user choose date
+            recruitmentCycleLabel: "Spring-2025" // eventually make this dynamic
+          };
+          
         try {
-            // TODO: replace with actual backend endpoint
-            const res = await axios.post("http://localhost:3000/api/attendance", formData);
+            const res = await axios.post("http://localhost:3000/api/attendance", payload);
             alert("Attendance recorded successfully!");
             // Optionally reset form
             setFormData({ name: "", pid: "", event: "" });

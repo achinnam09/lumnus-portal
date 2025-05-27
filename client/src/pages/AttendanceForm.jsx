@@ -2,6 +2,15 @@
 import { useState } from "react";
 import axios from "axios"; // Used later to send form data to backend
 
+function getCurrentRecruitmentCycle() {
+  const now = new Date();
+  const month = now.getMonth(); // 0 = January, 11 = Dec
+  const year = now.getFullYear();
+  const season = (month >= 8 && month <= 10) ? "Fall" : "Spring";
+  return `${season}-${year}`;
+}
+
+
 const AttendanceForm = () => {
     // Local state to track form inputs
     const [formData, setFormData] = useState({
@@ -25,8 +34,8 @@ const AttendanceForm = () => {
             name: formData.name,
             pid: formData.pid,
             eventName: formData.event,
-            eventDate: new Date().toISOString(), // or let user choose date
-            recruitmentCycleLabel: "Spring-2025" // eventually make this dynamic
+            eventDate: new Date().toISOString(), 
+            recruitmentCycleLabel: getCurrentRecruitmentCycle()
           };
           
         try {
@@ -72,13 +81,18 @@ const AttendanceForm = () => {
     
             <div>
               <label>Event Name:</label><br />
-              <input 
-                type="text" 
-                name="event" 
+              <select
+                name="event"
                 value={formData.event}
                 onChange={handleChange}
-                required 
-              />
+                required
+              >
+                <option value="">-- Select and event --</option>
+                <option value="Info Night">Info Night</option>
+                <option value="Case Study Night">Cause Study Night</option>
+                <option value="Speed Networking">Speed Networking</option>
+                <option value="Assessment Center">Assessment Center</option>
+              </select>
             </div>
     
             <button type="submit">Submit Attendance</button>

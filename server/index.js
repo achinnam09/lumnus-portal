@@ -23,74 +23,88 @@ app.get("/", (req, res) => {
 });
 
 app.post("/api/attendance", async (req, res) => {
-    const { name, pid, eventName, recruitmentCycleLabel, eventDate } = req.body;
-  
-    if (!name || !pid || !eventName || !recruitmentCycleLabel || !eventDate) {
-      return res.status(400).json({ error: "All fields are required." });
+  const { name, pid, eventName, recruitmentCycleLabel, eventDate } = req.body;
+
+  // Basic field validation
+  if (!name || !pid || !eventName || !recruitmentCycleLabel || !eventDate) {
+    return res.status(400).json({ error: "All fields are required." });
+  }
+
+  try {
+    // 1. Find or create RecruitmentCycle
+    let cycle = await prisma.recruitmentCycle.findUnique({
+      where: { label: recruitmentCycleLabel }
+    });
+
+    if (!cycle) {
+      cycle = await prisma.recruitmentCycle.create({
+        data: { label: recruitmentCycleLabel }
+      });
     }
-  
-    try {
-      // 1. Find or create the recruitment cycle
-      let cycle = await prisma.recruitmentCycle.findUnique({
-        where: { label: recruitmentCycleLabel }
-      });
-  
-      if (!cycle) {
-        cycle = await prisma.recruitmentCycle.create({
-          data: { label: recruitmentCycleLabel }
-        });
+
+    // 2. Find or create Event
+    let event = await prisma.event.findFirst({
+      where: {
+        name: eventName,
+        cycleId: cycle.id
       }
-  
-      // 2. Find or create the event
-      let event = await prisma.event.findFirst({
-        where: {
-          name: eventName,
-          cycleId: cycle.id
-        }
-      });
-  
-      if (!event) {
-        event = await prisma.event.create({
-          data: {
-            name: eventName,
-            date: new Date(eventDate),
-            cycleId: cycle.id
-          }
-        });
-      }
-  
-      // 3. Find or create the applicant
-      let applicant = await prisma.applicant.findFirst({
-        where: {
-          pid: pid,
-          cycleId: cycle.id
-        }
-      });
-  
-      if (!applicant) {
-        applicant = await prisma.applicant.create({
-          data: {
-            name,
-            pid,
-            cycleId: cycle.id
-          }
-        });
-      }
-  
-      // 4. Create the attendance record
-      const attendance = await prisma.attendance.create({
+    });
+
+    if (!event) {
+      event = await prisma.event.create({
         data: {
-          applicantId: applicant.id,
-          eventId: event.id
+          name: eventName,
+          date: new Date(eventDate),
+          cycleId: cycle.id
         }
       });
-  
-      res.status(201).json(attendance);
-    } catch (err) {
-      console.error("Error saving attendance:", err);
-      res.status(500).json({ error: "Internal server error." });
     }
-  });  
+
+    // 3. Check for existing applicant with same PID in this cycle
+    let applicant = await prisma.applicant.findFirst({
+      where: {
+        pid,
+        cycleId: cycle.id
+      }
+    });
+
+    // If applicant exists, reuse it. If not, create a new one
+    if (!applicant) {
+      applicant = await prisma.applicant.create({
+        data: {
+          name,
+          pid,
+          cycleId: cycle.id
+        }
+      });
+    }
+
+    // 4. Check if this applicant already signed into this event
+    const alreadySignedIn = await prisma.attendance.findFirst({
+      where: {
+        applicantId: applicant.id,
+        eventId: event.id
+      }
+    });
+
+    if (alreadySignedIn) {
+      return res.status(400).json({ error: "You have already signed in for this event." });
+    }
+
+    // 5. Create attendance record
+    const attendance = await prisma.attendance.create({
+      data: {
+        applicantId: applicant.id,
+        eventId: event.id
+      }
+    });
+
+    res.status(201).json(attendance);
+  } catch (err) {
+    console.error("❌ Error in /api/attendance:", err);
+    res.status(500).json({ error: "Internal server error." });
+  }
+});
   
 // Start the server
 const PORT = process.env.PORT || 3000;

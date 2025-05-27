@@ -21,6 +21,7 @@ model Applicant {
   cycleId      Int
   recruitmentCycle RecruitmentCycle @relation(fields: [cycleId], references: [id])
   attendances  Attendance[]
+  @@unique ([pid, cycleId]) // prevents multiple same-PID per recruitment cycle
 }
 
 model Event {
@@ -40,4 +41,6 @@ model Attendance {
 
   applicant   Applicant @relation(fields: [applicantId], references: [id])
   event       Event     @relation(fields: [eventId], references: [id])
+
+  @@unique([applicantId, eventId]) // prevents double check-in for an event
 }

@@ -35,8 +35,9 @@ const AttendanceForm = () => {
             // Optionally reset form
             setFormData({ name: "", pid: "", event: "" });
         } catch (err) {
-            console.error(err);
-            alert("There was an error submitting the form.");
+            // Extract specific error message from backend
+            const errorMessage = err.response?.data?.error || "There was an error submitting the form.";
+            alert(`${errorMessage}`);
         }
     };
 

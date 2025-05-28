@@ -12,6 +12,7 @@ model RecruitmentCycle {
   label      String      @unique
   events     Event[]
   applicants Applicant[]
+  applications Application[]
 }
 
 model Applicant {
@@ -21,6 +22,8 @@ model Applicant {
   cycleId      Int
   recruitmentCycle RecruitmentCycle @relation(fields: [cycleId], references: [id])
   attendances  Attendance[]
+
+  application  Application?
   @@unique ([pid, cycleId]) // prevents multiple same-PID per recruitment cycle
 }
 
@@ -44,3 +47,33 @@ model Attendance {
 
   @@unique([applicantId, eventId]) // prevents double check-in for an event
 }
+
+enum Track{
+  Strategy
+  DataAnalytics
+}
+
+model Application {
+  id            Int       @id @default(autoincrement())
+
+  applicantId   Int @unique
+  applicant     Applicant @relation(fields: [applicantId], references: [id])
+
+  cycleId       Int
+  recruitmentCycle RecruitmentCycle @relation(fields: [cycleId], references: [id])
+
+  year          String
+  email         String
+  major         String
+  minor         String?
+  track         Track
+  essay1        String
+  essay2        String
+  resumeUrl     String
+  headshotUrl   String
+  heardFrom     String
+  createdAt     DateTime  @default(now())
+
+  @@unique([applicantId, cycleId]) // Enforces one app per cycle per applicant
+}
+

@@ -3,6 +3,9 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import { PrismaClient } from "@prisma/client";
+import upload from "./middleware/multer.js";
+import supabase from "./supabase.js";
+import { v4 as uuidv4} from "uuid";
 
 // Load environment varaibles from .env file
 dotenv.config();
@@ -21,6 +24,96 @@ app.use(express.json());
 app.get("/", (req, res) => {
   res.send("Backend is live!");
 });
+
+app.post("/api/application", upload.fields([
+  { name : "resume", maxCount: 1 },
+  { name: "headshot", maxCount: 1 },
+]), async(req, res) => {
+  try {
+    const {
+      name, pid, email, year, major, minor, track,
+      essay1, essay2, heardFrom, recruitmentCycleLabel
+    } = req.body;
+
+    const resumeFile = req.files.resume?.[0];
+    const headshotFile = req.files.headshot?.[0];
+
+    if (!resumeFile || !headshotFile) {
+      return res.status(400).json({error: "Missing resume or headshot"});
+    }
+
+    // Step 1: Ensure recruitment cycle exists
+    let cycle = await prisma.recruitmentCycle.findUnique({
+      where: { label: recruitmentCycleLabel },
+    });
+    if (!cycle) {
+      cycle = await prisma.recruitmentCycle.create({
+        data: { label: recruitmentCycleLabel},
+      });
+    }
+
+    // Step 2: Ensure applicant exists
+    let applicant = await prisma.applicant.findUnique({
+      where: {
+        pid_cycleId: { pid, cycleId: cycle.id}, // compound unique
+      },
+    });
+    if (!applicant) {
+      applicant = await prisma.applicant.create({
+        data: {
+          name,
+          pid,
+          cycleId: cycle.id,
+        },
+      });
+    }
+
+    // Step 3: Upload files to Supabase
+    const resumePath = `${pid}-${uuidv4()}.pdf`
+    const headshotPath = `${pid}-${uuidv4()}.${headshotFile.mimetype.split("/")[1]}`;
+
+    const [resumeUpload, headshotUpload] = await Promise.all([
+      supabase.storage.from("resumes").upload(resumePath, resumeFile.buffer, {
+        contentType: "application/pdf",
+        upsert: true,
+      }),
+      supabase.storage.from("headshots").upload(headshotPath, headshotFile.buffer, {
+        contentType: headshotFile.mimetype,
+        upsert: true,
+      }),
+    ]);
+
+    if (resumeUpload.error || headshotUpload.error) {
+      return res.status(500).json({ error: "Error uploading files to Supabase."});
+    }
+
+    const resumeUrl = `${process.env.SUPABASE_URL}/storage/v1/object/public/resumes/${resumePath}`;
+    const headshotUrl = `${process.env.SUPABASE_URL}/storage/v1/object/public/headshots/${headshotPath}`;
+
+    const application = await prisma.application.create({
+      data: {
+        applicantId: applicant.id,
+        cycleId: cycle.id,
+        year,
+        email,
+        major,
+        minor: minor || null,
+        track,
+        essay1,
+        essay2,
+        resumeUrl,
+        headshotUrl,
+        heardFrom
+      },
+    });
+
+    res.status(201).json({ message: "Application submitted!", application });
+  } catch (err) {
+    console.error("Error processing application:", err);
+    res.status(500).json({ error: "Internal server error."});
+  }
+});
+
 
 app.post("/api/attendance", async (req, res) => {
   const { name, pid, eventName, recruitmentCycleLabel, eventDate } = req.body;

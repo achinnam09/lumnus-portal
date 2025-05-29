@@ -1,0 +1,75 @@
+/* 1. Full-page section to center contents horizontally + vertically */
+.attendance-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 85vh;
+    background-color: #f9fafb;
+    width: 100%;
+    padding: 0 1rem;
+  }
+  
+  /* 2. Card container (smaller max-width + better spacing) */
+  .form-container {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 16px;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+    width: 100%;
+    max-width: 400px; /* reduced from 480px */
+    margin: 0 auto;
+    margin-top: -3rem; 
+  }
+  
+  /* 3. Title styling */
+  .form-title {
+    font-size: 1.5rem;
+    text-align: center;
+    margin-bottom: 1.5rem;
+    color: #1e293b;
+  }
+  
+  /* 4. Form layout */
+  .attendance-form .form-group {
+    margin-bottom: 1.25rem;
+  }
+  
+  .attendance-form label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+  
+  .attendance-form input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0.65rem;
+    font-size: 1rem;
+    border: 1px solid #cbd5e0;
+    border-radius: 8px;
+    outline: none;
+  }
+  
+  .attendance-form input:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+  }
+  
+  /* 5. Submit button */
+  .submit-button {
+    width: 100%;
+    padding: 0.75rem;
+    background-color: #2563eb;
+    color: white;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.2s ease-in-out;
+  }
+  
+  .submit-button:hover {
+    background-color: #1e40af;
+  }
+  

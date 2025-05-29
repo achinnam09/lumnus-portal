@@ -25,7 +25,8 @@ a:hover {
 body {
   margin: 0;
   display: flex;
-  place-items: center;
+  justify-content: center;  /* center the app-wrapper horizontally */
+  align-items: flex-start;  /* keep header/navbar at the top */
   min-width: 320px;
   min-height: 100vh;
 }

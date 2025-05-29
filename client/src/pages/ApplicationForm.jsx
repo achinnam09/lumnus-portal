@@ -26,10 +26,60 @@ const ApplicationForm = () => {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    alert("Application submitted (functionality coming next)");
-    // Form submission logic will go here
+
+    // Determine current recruitment cycle label
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = now.getMonth();
+    const cycleSeason = (month >= 8 && month <= 10) ? "Fall" : "Spring";
+    const recruitmentCycleLabel = `${cycleSeason}-${year}`;
+
+    const form = new FormData();
+    form.append("name", formData.name);
+    form.append("pid", formData.pid);
+    form.append("email", formData.email);
+    form.append("year", formData.year);
+    form.append("major", formData.major);
+    
+    // only append minor if it exists and is not empty
+    if (formData.minor && formData.minor.trim() !== "" ){
+        form.append("minor", formData.minor)
+    }
+
+    form.append("track", formData.track);
+    form.append("essay1", formData.essay1);
+    form.append("essay2", formData.essay2);
+
+    const heardFromFinal = 
+        formData.heardFrom === "Other" ? formData.heardFromOther : formData.heardFrom;
+    form.append("heardFrom", heardFromFinal);
+
+    form.append("recruitmentCycleLabel", recruitmentCycleLabel);
+
+    form.append("resume", formData.resume);
+    form.append("headshot", formData.headshot);
+
+    try {
+        const res = await fetch("http://localhost:3000/api/application", {
+            method: "POST",
+            body: form,
+        });
+
+        const result = await res.json();
+
+        if(!res.ok) {
+            throw new Error(result.error || "Unknown error");
+        }
+
+        alert("Application submitted successfully!");
+    } catch (err) {
+        console.error("Submission error:", err);
+        alert("Error submitting application. Please try again.");
+    }
+
+    
   };
 
   return (
@@ -52,7 +102,7 @@ const ApplicationForm = () => {
             <select
                 name="year"
                 value={formData.year}
-                onChnage={handleChange}
+                onChange={handleChange}
                 required
             >
                 <option value="">-- Select year --</option>
@@ -193,7 +243,7 @@ const ApplicationForm = () => {
                 <option value="">-- Select and option --</option>
                 <option value="Tabling at Library Walk">Tabling at Library Walk</option>
                 <option value="Meet the Orgs">Meet the Orgs</option>
-                <option value="Instragram">Instagram</option>
+                <option value="Instagram">Instagram</option>
                 <option value="Friends/Family/Word of Mouth">Friends/Family/Word of Mouth</option>
                 <option value="LinkedIn">LinkedIn</option>
                 <option value="Online Website">Online Website</option>

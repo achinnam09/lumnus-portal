@@ -172,8 +172,8 @@ const ApplicationForm = () => {
             <input
                 type="radio"
                 name="track"
-                value="Data Analytics"
-                checked={formData.track === "Data Analytics"}
+                value="DataAnalytics"
+                checked={formData.track === "DataAnalytics"}
                 onChange={handleChange}
                 required
             />

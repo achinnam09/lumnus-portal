@@ -38,6 +38,9 @@ app.post("/api/application", upload.fields([
     const resumeFile = req.files.resume?.[0];
     const headshotFile = req.files.headshot?.[0];
 
+    console.log("Resume buffer:", !!resumeFile?.buffer);
+    console.log("Headshot buffer:", !!headshotFile?.buffer);
+
     if (!resumeFile || !headshotFile) {
       return res.status(400).json({error: "Missing resume or headshot"});
     }
@@ -72,6 +75,10 @@ app.post("/api/application", upload.fields([
     const resumePath = `${pid}-${uuidv4()}.pdf`
     const headshotPath = `${pid}-${uuidv4()}.${headshotFile.mimetype.split("/")[1]}`;
 
+    console.log("Uploading resume:", resumeFile?.originalname, resumeFile?.buffer?.length);
+    console.log("Uploading headshot:", headshotFile?.originalname, headshotFile?.buffer?.length);
+
+
     const [resumeUpload, headshotUpload] = await Promise.all([
       supabase.storage.from("resumes").upload(resumePath, resumeFile.buffer, {
         contentType: "application/pdf",
@@ -84,6 +91,8 @@ app.post("/api/application", upload.fields([
     ]);
 
     if (resumeUpload.error || headshotUpload.error) {
+      console.error("Supabase resume error:", resumeUpload.error);
+      console.error("Supabase headshot error:", headshotUpload.error);
       return res.status(500).json({ error: "Error uploading files to Supabase."});
     }
 
@@ -110,6 +119,7 @@ app.post("/api/application", upload.fields([
     res.status(201).json({ message: "Application submitted!", application });
   } catch (err) {
     console.error("Error processing application:", err);
+    console.error(err);
     res.status(500).json({ error: "Internal server error."});
   }
 });

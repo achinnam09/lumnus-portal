@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import "./Dashboard.css";
 
 const initialApplicants = [
+  // ... (same applicants as before)
   {
     name: "Alex Chen",
     track: "Strategy",
@@ -97,69 +98,122 @@ const initialApplicants = [
 const Dashboard = () => {
   const [search, setSearch] = useState("");
   const [applicants, setApplicants] = useState(initialApplicants);
+  const [pendingStatus, setPendingStatus] = useState({});
 
-  const handleStatusChange = (index, newStatus) => {
-    const updated = [...applicants];
-    updated[index].status = updated[index].status === newStatus ? "none" : newStatus;
-    setApplicants(updated);
+  const handleStatusChange = (name, newStatus) => {
+    setPendingStatus(prev => ({
+      ...prev,
+      [name]: prev[name] === newStatus ? "none" : newStatus
+    }));
   };
 
-  const sortPriority = { blue: 0, green: 1, red: 2, none: 3 };
-  const filteredApplicants = applicants
-    .filter(applicant => applicant.name.toLowerCase().includes(search.toLowerCase()))
-    .sort((a, b) => sortPriority[a.status] - sortPriority[b.status]);
+  const applyChanges = () => {
+    const updated = applicants.map(app => ({
+      ...app,
+      status: pendingStatus[app.name] ?? app.status
+    }));
+    setApplicants(updated);
+    setPendingStatus({});
+  };
+
+  const resetChanges = () => {
+    setPendingStatus({});
+  };
+
+  const hasPendingChanges = Object.keys(pendingStatus).length > 0;
+  const getCurrentStatus = (applicant) => pendingStatus[applicant.name] ?? applicant.status;
+
+  const grouped = {
+    blue: applicants.filter(a => a.status === "blue" && a.name.toLowerCase().includes(search.toLowerCase())),
+    green: applicants.filter(a => a.status === "green" && a.name.toLowerCase().includes(search.toLowerCase())),
+    red: applicants.filter(a => a.status === "red" && a.name.toLowerCase().includes(search.toLowerCase())),
+    none: applicants.filter(a => a.status === "none" && a.name.toLowerCase().includes(search.toLowerCase())),
+  };
+
+  const renderSection = (title, color, list) => (
+    list.length > 0 && (
+      <div className="section">
+        <h2 className="section-header" style={{ color }}>{title} ({list.length})</h2>
+        {list.map((applicant, index) => {
+          const status = getCurrentStatus(applicant);
+          return (
+            <div key={`${title}-${index}`} className="applicant-card">
+              <div className="applicant-photo-container">
+                <img src={applicant.photo} alt={`${applicant.name}`} className="applicant-photo" />
+                <div className="flag-buttons right-aligned">
+                  <button
+                    onClick={() => handleStatusChange(applicant.name, 'red')}
+                    className={`status-btn outline ${status === 'red' ? 'red' : ''}`}
+                  >R</button>
+                  <button
+                    onClick={() => handleStatusChange(applicant.name, 'green')}
+                    className={`status-btn outline ${status === 'green' ? 'green' : ''}`}
+                  >F</button>
+                  <button
+                    onClick={() => handleStatusChange(applicant.name, 'blue')}
+                    className={`status-btn outline ${status === 'blue' ? 'blue' : ''}`}
+                  >A</button>
+                </div>
+              </div>
+              <div className="applicant-info">
+                <h3 className="applicant-name">{applicant.name}</h3>
+                <ul>
+                  <li><strong>Track:</strong> {applicant.track}</li>
+                  <li><strong>Year:</strong> {applicant.year}</li>
+                  <li><strong>Major:</strong> {applicant.major}</li>
+                  <li><strong>Minor:</strong> {applicant.minor}</li>
+                  <li><strong>Pitch:</strong> {applicant.pitch}</li>
+                  <li><strong>Logic:</strong> {applicant.logic}</li>
+                  <li><strong>Creativity:</strong> {applicant.creativity}</li>
+                  <li><strong>Estimation:</strong> {applicant.estimation}</li>
+                  <li><strong>Interview:</strong> {applicant.interview}</li>
+                  <li><strong>Attendance:</strong> {applicant.attendance.join(', ')}</li>
+                </ul>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    )
+  );
 
   return (
     <div className="dashboard-wrapper">
       <div className="dashboard-header">
         <h1 className="dashboard-title">Applicant Dashboard</h1>
-        <input
-          type="text"
-          placeholder="Search by name..."
-          className="search-input"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
+        <div className="search-bar-wrapper">
+          <input
+            type="text"
+            placeholder="Search by name..."
+            className="search-input"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </div>
+        <div className="button-row">
+          <button
+            className={`apply-button ${hasPendingChanges ? "active" : ""}`}
+            onClick={applyChanges}
+            disabled={!hasPendingChanges}
+          >
+            Apply Changes
+          </button>
+          <button
+            className="reset-button"
+            onClick={resetChanges}
+            disabled={!hasPendingChanges}
+          >
+            Reset Changes
+          </button>
+        </div>
         <hr className="dashboard-divider" />
       </div>
 
       <div className="applicant-scroll-container">
-        {filteredApplicants.map((applicant, index) => (
-          <div key={index} className="applicant-card">
-            <div className="applicant-photo-container">
-              <img src={applicant.photo} alt={`${applicant.name}`} className="applicant-photo" />
-              <div className="flag-buttons right-aligned">
-                <button
-                  onClick={() => handleStatusChange(index, 'red')}
-                  className={`status-btn ${applicant.status === 'red' ? 'red' : ''}`}
-                >R</button>
-                <button
-                  onClick={() => handleStatusChange(index, 'green')}
-                  className={`status-btn ${applicant.status === 'green' ? 'green' : ''}`}
-                >F</button>
-                <button
-                  onClick={() => handleStatusChange(index, 'blue')}
-                  className={`status-btn ${applicant.status === 'blue' ? 'blue' : ''}`}
-                >A</button>
-              </div>
-            </div>
-            <div className="applicant-info">
-              <h3 className="applicant-name">{applicant.name}</h3>
-              <ul>
-                <li><strong>Track:</strong> {applicant.track}</li>
-                <li><strong>Year:</strong> {applicant.year}</li>
-                <li><strong>Major:</strong> {applicant.major}</li>
-                <li><strong>Minor:</strong> {applicant.minor}</li>
-                <li><strong>Pitch:</strong> {applicant.pitch}</li>
-                <li><strong>Logic:</strong> {applicant.logic}</li>
-                <li><strong>Creativity:</strong> {applicant.creativity}</li>
-                <li><strong>Estimation:</strong> {applicant.estimation}</li>
-                <li><strong>Interview:</strong> {applicant.interview}</li>
-                <li><strong>Attendance:</strong> {applicant.attendance.join(', ')}</li>
-              </ul>
-            </div>
-          </div>
-        ))}
+        {renderSection("Accepted", "#3b82f6", grouped.blue)}
+        {renderSection("Final Round", "#22c55e", grouped.green)}
+        {renderSection("Unreviewed", "#6b7280", grouped.none)}
+        {renderSection("Rejected", "#ef4444", grouped.red)}
       </div>
     </div>
   );

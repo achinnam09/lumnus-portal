@@ -17,14 +17,53 @@
     margin-bottom: 1.5rem;
   }
   
+  .search-bar-wrapper {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 1rem;
+  }
+  
   .search-input {
     width: 100%;
     max-width: 400px;
     padding: 0.5rem;
     border-radius: 8px;
     border: 1px solid #cbd5e0;
-    margin-bottom: 2rem;
     font-size: 1rem;
+  }
+  
+  .button-row {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-bottom: 2rem;
+  }
+  
+  .apply-button,
+  .reset-button {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    border: 2px solid #d1d5db;
+    background-color: #f3f4f6;
+    color: #374151;
+    transition: all 0.2s ease-in-out;
+    margin-bottom: -1rem;
+  }
+  
+  .apply-button.active {
+    background-color: #4b5563;
+    color: white;
+    border-color: #4b5563;
+  }
+  
+  .reset-button:disabled,
+  .apply-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
   }
   
   .applicant-card {
@@ -69,31 +108,34 @@
   .status-btn {
     padding: 4px 8px;
     font-size: 0.7rem;
-    border: none;
     border-radius: 6px;
     font-weight: 500;
-    background-color: #f3f4f6;
     cursor: pointer;
-    transition: background-color 0.2s ease-in-out;
+    transition: all 0.2s ease-in-out;
     white-space: nowrap;
     min-width: 70px;
     text-align: center;
-    margin-top: 0.5rem;
+    background-color: #f3f4f6;
+    border: 1.5px solid #d1d5db;
+    color: #374151;
   }
   
   .status-btn.red {
     background-color: #f87171;
     color: white;
+    border-color: #f87171;
   }
   
   .status-btn.green {
     background-color: #4ade80;
     color: white;
+    border-color: #4ade80;
   }
   
   .status-btn.blue {
     background-color: #60a5fa;
     color: white;
+    border-color: #60a5fa;
   }
   
   .applicant-info {
@@ -132,6 +174,7 @@
     background-color: #f9fafb;
     padding: 1rem 0;
     text-align: center;
+    width: 100%;
   }
   
   .applicant-scroll-container {

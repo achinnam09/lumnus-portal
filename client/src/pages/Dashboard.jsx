@@ -141,17 +141,23 @@ const Dashboard = () => {
               <div className="applicant-photo-container">
                 <img src={applicant.photo} alt={`${applicant.name}`} className="applicant-photo" />
                 <div className="flag-buttons right-aligned">
+                {applicant.redFlag && (
+                    <div className="red-flag-button">🚩</div>
+                )}
                   <button
                     onClick={() => handleStatusChange(applicant.name, 'red')}
                     className={`status-btn outline ${status === 'red' ? 'red' : ''}`}
+                    style={{ gridColumn: '2' }}
                   >R</button>
                   <button
                     onClick={() => handleStatusChange(applicant.name, 'green')}
                     className={`status-btn outline ${status === 'green' ? 'green' : ''}`}
+                    style={{ gridColumn: '3' }}
                   >F</button>
                   <button
                     onClick={() => handleStatusChange(applicant.name, 'blue')}
                     className={`status-btn outline ${status === 'blue' ? 'blue' : ''}`}
+                    style={{ gridColumn: '4' }}
                   >A</button>
                 </div>
               </div>

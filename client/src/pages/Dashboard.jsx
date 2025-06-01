@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import "./Dashboard.css";
 
-const sampleApplicants = [
+const initialApplicants = [
   {
     name: "Alex Chen",
     track: "Strategy",
@@ -13,8 +13,9 @@ const sampleApplicants = [
     creativity: "9/10",
     estimation: "6/10",
     interview: "8.5/10",
-    attendance: ["Info Night", "Case Study Night", "Speed Networking"],
-    photo: "https://randomuser.me/api/portraits/men/32.jpg"
+    attendance: ["IN", "CSN", "SN"],
+    photo: "https://randomuser.me/api/portraits/men/32.jpg",
+    status: "none"
   },
   {
     name: "Sasha Kim",
@@ -27,8 +28,9 @@ const sampleApplicants = [
     creativity: "6/10",
     estimation: "8/10",
     interview: "9/10",
-    attendance: ["Info Night", "Assessment Center"],
-    photo: "https://randomuser.me/api/portraits/women/44.jpg"
+    attendance: ["IN", "AC"],
+    photo: "https://randomuser.me/api/portraits/women/44.jpg",
+    status: "none"
   },
   {
     name: "Priya Sharma",
@@ -41,8 +43,9 @@ const sampleApplicants = [
     creativity: "7/10",
     estimation: "7.5/10",
     interview: "8/10",
-    attendance: ["Info Night", "Speed Networking"],
-    photo: "https://randomuser.me/api/portraits/women/68.jpg"
+    attendance: ["IN", "SN"],
+    photo: "https://randomuser.me/api/portraits/women/68.jpg",
+    status: "none"
   },
   {
     name: "Marcus Li",
@@ -55,8 +58,9 @@ const sampleApplicants = [
     creativity: "6/10",
     estimation: "9/10",
     interview: "7.5/10",
-    attendance: ["Info Night", "Case Study Night", "Assessment Center"],
-    photo: "https://randomuser.me/api/portraits/men/75.jpg"
+    attendance: ["IN", "CSN", "AC"],
+    photo: "https://randomuser.me/api/portraits/men/75.jpg",
+    status: "none"
   },
   {
     name: "Emily Nguyen",
@@ -69,8 +73,9 @@ const sampleApplicants = [
     creativity: "9.5/10",
     estimation: "6/10",
     interview: "8.8/10",
-    attendance: ["Case Study Night"],
-    photo: "https://randomuser.me/api/portraits/women/65.jpg"
+    attendance: ["CSN"],
+    photo: "https://randomuser.me/api/portraits/women/65.jpg",
+    status: "none"
   },
   {
     name: "Daniel Orozco",
@@ -83,17 +88,26 @@ const sampleApplicants = [
     creativity: "7/10",
     estimation: "8/10",
     interview: "8.2/10",
-    attendance: ["Info Night", "Assessment Center"],
-    photo: "https://randomuser.me/api/portraits/men/81.jpg"
+    attendance: ["IN", "AC"],
+    photo: "https://randomuser.me/api/portraits/men/81.jpg",
+    status: "none"
   }
 ];
 
 const Dashboard = () => {
   const [search, setSearch] = useState("");
+  const [applicants, setApplicants] = useState(initialApplicants);
 
-  const filteredApplicants = sampleApplicants.filter(applicant =>
-    applicant.name.toLowerCase().includes(search.toLowerCase())
-  );
+  const handleStatusChange = (index, newStatus) => {
+    const updated = [...applicants];
+    updated[index].status = updated[index].status === newStatus ? "none" : newStatus;
+    setApplicants(updated);
+  };
+
+  const sortPriority = { blue: 0, green: 1, red: 2, none: 3 };
+  const filteredApplicants = applicants
+    .filter(applicant => applicant.name.toLowerCase().includes(search.toLowerCase()))
+    .sort((a, b) => sortPriority[a.status] - sortPriority[b.status]);
 
   return (
     <div className="dashboard-wrapper">
@@ -112,7 +126,23 @@ const Dashboard = () => {
       <div className="applicant-scroll-container">
         {filteredApplicants.map((applicant, index) => (
           <div key={index} className="applicant-card">
-            <img src={applicant.photo} alt={`${applicant.name}`} className="applicant-photo" />
+            <div className="applicant-photo-container">
+              <img src={applicant.photo} alt={`${applicant.name}`} className="applicant-photo" />
+              <div className="flag-buttons right-aligned">
+                <button
+                  onClick={() => handleStatusChange(index, 'red')}
+                  className={`status-btn ${applicant.status === 'red' ? 'red' : ''}`}
+                >R</button>
+                <button
+                  onClick={() => handleStatusChange(index, 'green')}
+                  className={`status-btn ${applicant.status === 'green' ? 'green' : ''}`}
+                >F</button>
+                <button
+                  onClick={() => handleStatusChange(index, 'blue')}
+                  className={`status-btn ${applicant.status === 'blue' ? 'blue' : ''}`}
+                >A</button>
+              </div>
+            </div>
             <div className="applicant-info">
               <h3 className="applicant-name">{applicant.name}</h3>
               <ul>

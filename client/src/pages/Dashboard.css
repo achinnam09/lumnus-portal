@@ -1,0 +1,109 @@
+/* Dashboard.css */
+
+.dashboard-page {
+    background-color: #f9fafb;
+    min-height: 100vh;
+    padding: 2rem 1rem;
+    font-family: system-ui, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .dashboard-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 1.5rem;
+  }
+  
+  .search-input {
+    width: 100%;
+    max-width: 400px;
+    padding: 0.5rem;
+    border-radius: 8px;
+    border: 1px solid #cbd5e0;
+    margin-bottom: 2rem;
+    font-size: 1rem;
+  }
+  
+  .applicant-card {
+    background-color: white;
+    width: 100%;
+    max-width: 720px;
+    border-radius: 16px;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+    margin-bottom: 2rem;
+    padding: 2rem 2rem;
+    display: flex;
+    gap: 2rem;
+    align-items: flex-start;
+    box-sizing: border-box;
+    flex-direction: row-reverse;
+  }
+  
+  .applicant-photo {
+    width: 220px;
+    height: 280px;
+    object-fit: cover;
+    border-radius: 12px;
+    flex-shrink: 0;
+  }
+  
+  .applicant-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start; /* Aligns content to top */
+    min-width: 0;
+    margin-top: -1.6rem;
+  }
+  
+  .applicant-name {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: 0.5rem;
+  }
+  
+  .applicant-info ul {
+    padding-left: 1rem;
+    margin: 0;
+    list-style-type: disc;
+    word-break: break-word;
+  }
+  
+  .applicant-info li {
+    margin-bottom: 0.35rem;
+    color: #374151;
+    overflow-wrap: anywhere;
+  }
+  
+  .dashboard-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background-color: #f9fafb;
+    padding: 1rem 0;
+    text-align: center;
+  }
+  
+  .applicant-scroll-container {
+    overflow-y: auto;
+    max-height: calc(100vh - 140px); /* adjust based on actual header height */
+    padding-bottom: 2rem;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .dashboard-divider {
+    border: none;
+    border-top: 1px solid #d1d5db; /* Tailwind's gray-300 */
+    width: 100%;
+    max-width: 720px;
+    margin: 0 auto;
+  }
+  
+  

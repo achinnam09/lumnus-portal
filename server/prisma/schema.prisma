@@ -8,11 +8,10 @@ datasource db {
 }
 
 model RecruitmentCycle {
-  id          Int           @id @default(autoincrement())
-  label       String        @unique
-  applicants  Applicant[]
-  Application Application[]
-  events      Event[]
+  id           Int           @id @default(autoincrement())
+  label        String        @unique
+  events       Event[]
+  applicants   Applicant[]
   applications Application[]
 }
 
@@ -22,13 +21,11 @@ model Applicant {
   pid              String
   cycleId          Int
   recruitmentCycle RecruitmentCycle @relation(fields: [cycleId], references: [id])
-  Application      Application?
   attendances      Attendance[]
 
-  @@unique([pid, cycleId])
+  application Application?
 
-  application  Application?
-  @@unique ([pid, cycleId]) // prevents multiple same-PID per recruitment cycle
+  @@unique([pid, cycleId]) // prevents multiple same-PID per recruitment cycle
 }
 
 model Event {
@@ -36,75 +33,47 @@ model Event {
   name             String
   date             DateTime
   cycleId          Int
-  attendances      Attendance[]
   recruitmentCycle RecruitmentCycle @relation(fields: [cycleId], references: [id])
+  attendances      Attendance[]
 }
 
 model Attendance {
-  id          Int       @id @default(autoincrement())
-  timestamp   DateTime  @default(now())
+  id          Int      @id @default(autoincrement())
   applicantId Int
   eventId     Int
-  applicant   Applicant @relation(fields: [applicantId], references: [id])
-  event       Event     @relation(fields: [eventId], references: [id])
+  timestamp   DateTime @default(now())
 
-  @@unique([applicantId, eventId])
-}
+  applicant Applicant @relation(fields: [applicantId], references: [id])
+  event     Event     @relation(fields: [eventId], references: [id])
 
-model Application {
-  id               Int              @id @default(autoincrement())
-  applicantId      Int              @unique
-  cycleId          Int
-  year             String
-  email            String
-  major            String
-  minor            String?
-  track            Track
-  essay1           String
-  essay2           String
-  resumeUrl        String
-  headshotUrl      String
-  heardFrom        String
-  createdAt        DateTime         @default(now())
-  Applicant        Applicant        @relation(fields: [applicantId], references: [id])
-  RecruitmentCycle RecruitmentCycle @relation(fields: [cycleId], references: [id])
-
-  @@unique([applicantId, cycleId])
+  @@unique([applicantId, eventId]) // prevents double check-in for an event
 }
 
 enum Track {
   Strategy
   DataAnalytics
-
-  @@unique([applicantId, eventId]) // prevents double check-in for an event
-}
-
-enum Track{
-  Strategy
-  DataAnalytics
 }
 
 model Application {
-  id            Int       @id @default(autoincrement())
+  id Int @id @default(autoincrement())
 
-  applicantId   Int @unique
-  applicant     Applicant @relation(fields: [applicantId], references: [id])
+  applicantId Int       @unique
+  applicant   Applicant @relation(fields: [applicantId], references: [id])
 
-  cycleId       Int
+  cycleId          Int
   recruitmentCycle RecruitmentCycle @relation(fields: [cycleId], references: [id])
 
-  year          String
-  email         String
-  major         String
-  minor         String?
-  track         Track
-  essay1        String
-  essay2        String
-  resumeUrl     String
-  headshotUrl   String
-  heardFrom     String
-  createdAt     DateTime  @default(now())
+  year        String
+  email       String
+  major       String
+  minor       String?
+  track       Track
+  essay1      String
+  essay2      String
+  resumeUrl   String
+  headshotUrl String
+  heardFrom   String
+  createdAt   DateTime @default(now())
 
   @@unique([applicantId, cycleId]) // Enforces one app per cycle per applicant
 }
-

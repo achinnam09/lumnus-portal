@@ -1,0 +1,137 @@
+/* ===========================================
+   ApplicationForm.css (fixed, namespaced)
+   =========================================== */
+
+/* ---- 1) Full‐page wrapper ONLY for the Application page ---- */
+.application-form-page {
+    background-color: #f9fafb;        /* soft grey background */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    min-height: 100vh;                /* fill entire viewport */
+    padding: 2rem 1rem;               /* space around form */
+  
+    display: flex;                    
+    flex-direction: column;           /* stack <h2> above <form> vertically */
+    align-items: center;              /* center horizontally */
+  }
+  
+  /* ---- 2) The white “card” (the <form> itself) ---- */
+  .application-form-page form {
+    background-color: white;
+    max-width: 640px;                 /* wide form, matches your previous mockup */
+    width: 100%;
+    padding: 2rem;
+    border-radius: 16px;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+    box-sizing: border-box;           /* include padding in width calculation */
+    margin-top: 1rem;                 /* small gap under the <h2> */
+  }
+  
+  /* ---- 3) Section title (the <h2>) ---- */
+  .application-form-page h2 {
+    text-align: center;
+    font-size: 1.5rem;
+    margin: 0;                        /* remove any default top margin */
+    margin-bottom: 1.75rem;           /* space below heading */
+    color: #1e293b;
+    width: 100%;                      /* allow it to center‐align if needed */
+    max-width: 640px;                 /* same width as the form, so the title stays aligned */
+  }
+  
+  /* ---- 4) Labels + inputs/textarea/select ---- */
+  .application-form-page label {
+    font-weight: 600;
+    display: block;
+    margin-bottom: -1rem;
+    color: #1e293b;
+  }
+  
+  .application-form-page input,
+  .application-form-page select,
+  .application-form-page textarea {
+    width: 100%;
+    padding: 0.65rem;
+    font-size: 1rem;
+    border: 1px solid #cbd5e0;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;           /* space under each field */
+    box-sizing: border-box;
+    outline: none;
+    background-color: white;
+  }
+  
+  /* Focus state for inputs/selects/textareas */
+  .application-form-page input:focus,
+  .application-form-page select:focus,
+  .application-form-page textarea:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+  }
+  
+  /* Allow vertical resize on textareas but no horizontal resize */
+  .application-form-page textarea {
+    resize: vertical;
+  }
+  
+  /* ---- 5) Word‐count <p> under each textarea ---- */
+  .application-form-page p {
+    margin-top: -0.75rem;             /* pull it closer to the textarea */
+    font-size: 0.85rem;
+    color: #475569;
+    margin-bottom: 1.25rem;
+  }
+  
+  /* ---- 6) Radio button spacing ---- */
+  .application-form-page input[type="radio"] {
+    margin-right: 0.4rem;
+    margin-bottom: 0.75rem;
+  }
+  
+  /* ---- 7) Submit button styling ---- */
+  .application-form-page button {
+    width: 100%;
+    padding: 0.75rem;
+    background-color: #2563eb;
+    color: white;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+    margin-top: 1.25rem;              /* space above the submit button */
+  }
+  
+  .application-form-page button:hover {
+    background-color: #1e40af;
+  }
+
+/* ---- Radio button fix for track choice ---- */
+.application-form-page .track-choice-group {
+    margin-bottom: 1.25rem;
+  }
+  
+  .application-form-page .radio-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1.5rem;
+    padding: 0.25rem 0;
+    gap: 1rem;
+  }
+  
+  .application-form-page .radio-row span {
+    font-size: 1rem;
+    color: #1e293b;
+    width: 150px;
+    display: inline-block;
+    align-items: center;
+  }
+
+  .application-form-page .radio-row input[type="radio"] {
+    vertical-align: middle;
+    transform: translateY(4.9px);
+  }
+  
+  
+   
+  

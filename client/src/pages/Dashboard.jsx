@@ -16,7 +16,8 @@ const initialApplicants = [
     interview: "8.5/10",
     attendance: ["IN", "CSN", "SN"],
     photo: "https://randomuser.me/api/portraits/men/32.jpg",
-    status: "none"
+    status: "none",
+    redFlag: true
   },
   {
     name: "Sasha Kim",

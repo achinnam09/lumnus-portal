@@ -1,16 +1,8 @@
 // AttendanceForm.jsx
 import { useState } from "react";
 import axios from "axios"; // Used to send form data to backend
+import { getCurrentRecruitmentCycle } from "../utils/recruitmentCycle";
 import "./AttendanceForm.css"; // External stylesheet for layout and styling
-
-// Utility function to auto-fill recruitment cycle
-function getCurrentRecruitmentCycle() {
-  const now = new Date();
-  const month = now.getMonth(); // 0 = January, 11 = December
-  const year = now.getFullYear();
-  const season = month >= 8 && month <= 10 ? "Fall" : "Spring";
-  return `${season}-${year}`;
-}
 
 const AttendanceForm = () => {
   // Local state to track form inputs

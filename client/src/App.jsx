@@ -5,6 +5,7 @@ import Navbar from "./components/Navbar.jsx";
 import AttendanceForm from "./pages/AttendanceForm";
 import ApplicationForm from "./pages/ApplicationForm";
 import Dashboard from "./pages/Dashboard";
+import ConsultantScoring from "./pages/ConsultantScoring";
 import "./App.css";
 
 function App() {
@@ -27,6 +28,9 @@ function App() {
 
           {/* When user visits /dashboard, show Dashboard component */}
           <Route path="/dashboard" element={<Dashboard />} />
+
+          {/* Consultant scoring - accessed via direct URL only */}
+          <Route path="/consultant/score" element={<ConsultantScoring />} />
         </Routes>
       </main>
     </div>

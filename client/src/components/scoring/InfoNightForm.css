@@ -1,0 +1,81 @@
+/* ============================
+   InfoNightForm.css
+   ============================ */
+
+.info-night-form__title {
+  font-size: 1.25rem;
+  text-align: center;
+  margin-top: 0;
+  margin-bottom: 1.25rem;
+  color: #1e293b;
+}
+
+/* Candidate display row */
+.info-night-form__candidate-display {
+  background-color: #f1f5f9;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.info-night-form__candidate-label {
+  font-weight: 600;
+  color: #475569;
+}
+
+.info-night-form__candidate-name {
+  font-weight: 600;
+  color: #1e293b;
+}
+
+/* Flag button row */
+.info-night-form__flag-row {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 0.25rem;
+}
+
+/* Base flag button */
+.info-night-form__flag-btn {
+  flex: 1;
+  padding: 0.6rem 1rem;
+  border: 2px solid #cbd5e0;
+  border-radius: 8px;
+  background-color: #f9fafb;
+  color: #475569;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.info-night-form__flag-btn:hover {
+  border-color: #94a3b8;
+}
+
+/* Active green flag */
+.info-night-form__flag-btn--active-green {
+  background-color: #16a34a;
+  border-color: #16a34a;
+  color: white;
+}
+
+.info-night-form__flag-btn--active-green:hover {
+  background-color: #15803d;
+  border-color: #15803d;
+}
+
+/* Active red flag */
+.info-night-form__flag-btn--active-red {
+  background-color: #dc2626;
+  border-color: #dc2626;
+  color: white;
+}
+
+.info-night-form__flag-btn--active-red:hover {
+  background-color: #b91c1c;
+  border-color: #b91c1c;
+}

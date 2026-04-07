@@ -1,0 +1,283 @@
+/* ============================
+   CaseStudyForm.css
+   ============================ */
+
+/* 1) Page wrapper */
+.case-study-page {
+  background-color: #f9fafb;
+  min-height: 100vh;
+  padding: 2rem 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  width: 100%;
+}
+
+/* 2) Form card */
+.case-study-form {
+  background-color: white;
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+  width: 100%;
+  max-width: 800px;
+  box-sizing: border-box;
+  margin-top: 1rem;
+}
+
+/* 3) Title */
+.case-study-form__title {
+  font-size: 1.5rem;
+  text-align: center;
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+  color: #1e293b;
+}
+
+/* 4) Validate section */
+.case-study-form__validate {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.case-study-form__validate label {
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.case-study-form__validate input {
+  width: 100%;
+  padding: 0.65rem;
+  font-size: 1rem;
+  border: 1px solid #cbd5e0;
+  border-radius: 8px;
+  outline: none;
+  box-sizing: border-box;
+  background-color: white;
+  color: #1e293b;
+}
+
+.case-study-form__validate input::placeholder {
+  color: #64748b;
+  opacity: 1;
+}
+
+.case-study-form__validate input:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+}
+
+.case-study-form__validate button {
+  padding: 0.65rem;
+  background-color: #2563eb;
+  color: white;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.case-study-form__validate button:hover {
+  background-color: #1e40af;
+}
+
+/* 5) Category sections */
+.case-study-form__section {
+  background-color: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  margin-bottom: 1rem;
+  overflow: hidden;
+}
+
+.case-study-form__section-header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.85rem 1rem;
+  background-color: #f8fafc;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1e293b;
+  text-align: left;
+  transition: background-color 0.15s ease-in-out;
+}
+
+.case-study-form__section-header:hover {
+  background-color: #f1f5f9;
+}
+
+.case-study-form__section-arrow {
+  font-size: 0.75rem;
+  width: 1rem;
+  flex-shrink: 0;
+}
+
+.case-study-form__section-avg {
+  margin-left: auto;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #64748b;
+}
+
+.case-study-form__section-body {
+  padding: 0.75rem 1rem 1rem;
+}
+
+/* 6) Criterion rows */
+.case-study-form__criterion {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.case-study-form__criterion:last-of-type {
+  border-bottom: none;
+}
+
+.case-study-form__criterion-label {
+  flex: 1;
+  font-size: 0.95rem;
+  color: #334155;
+}
+
+/* 7) Score number input */
+.case-study-form__score-input {
+  width: 80px;
+  padding: 0.5rem;
+  font-size: 1rem;
+  text-align: center;
+  border: 1px solid #cbd5e0;
+  border-radius: 8px;
+  outline: none;
+  background-color: white;
+  color: #1e293b;
+  box-sizing: border-box;
+  -moz-appearance: textfield;
+}
+
+.case-study-form__score-input::placeholder {
+  color: #64748b;
+  opacity: 1;
+}
+
+.case-study-form__score-input::-webkit-inner-spin-button,
+.case-study-form__score-input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.case-study-form__score-input:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+}
+
+/* 8) Comment textarea */
+.case-study-form__comment {
+  width: 100%;
+  padding: 0.65rem;
+  font-size: 0.95rem;
+  border: 1px solid #cbd5e0;
+  border-radius: 8px;
+  outline: none;
+  resize: vertical;
+  margin-top: 0.75rem;
+  box-sizing: border-box;
+  background-color: white;
+  color: #1e293b;
+  font-family: inherit;
+}
+
+.case-study-form__comment::placeholder {
+  color: #64748b;
+  opacity: 1;
+}
+
+.case-study-form__comment:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+}
+
+/* 9) Score summary */
+.case-study-form__summary {
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  margin-top: 1.5rem;
+}
+
+.case-study-form__summary h3 {
+  margin: 0 0 0.75rem;
+  font-size: 1.1rem;
+  color: #1e293b;
+}
+
+.case-study-form__summary-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.35rem 0;
+  font-size: 0.95rem;
+  color: #334155;
+}
+
+.case-study-form__summary-total {
+  display: flex;
+  justify-content: space-between;
+  padding-top: 0.65rem;
+  margin-top: 0.5rem;
+  border-top: 2px solid #cbd5e0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+/* 10) Error and success messages */
+.case-study-form__error {
+  color: #dc2626;
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin-top: 0.75rem;
+  margin-bottom: 0;
+}
+
+.case-study-form__success {
+  color: #15803d;
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin-top: 0.75rem;
+  margin-bottom: 0;
+}
+
+/* 11) Submit button */
+.case-study-form__submit {
+  width: 100%;
+  padding: 0.75rem;
+  margin-top: 1.25rem;
+  background-color: #2563eb;
+  color: white;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.case-study-form__submit:hover:not(:disabled) {
+  background-color: #1e40af;
+}
+
+.case-study-form__submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

@@ -13,6 +13,8 @@ model RecruitmentCycle {
   events       Event[]
   applicants   Applicant[]
   applications Application[]
+  infoNightComments  InfoNightComment[]
+  caseStudyScores    CaseStudyScore[]
 }
 
 model Applicant {
@@ -24,6 +26,9 @@ model Applicant {
   attendances      Attendance[]
 
   application Application?
+
+  infoNightComments  InfoNightComment[]
+  caseStudyScores    CaseStudyScore[]
 
   @@unique([pid, cycleId]) // prevents multiple same-PID per recruitment cycle
 }
@@ -76,4 +81,40 @@ model Application {
   createdAt   DateTime @default(now())
 
   @@unique([applicantId, cycleId]) // Enforces one app per cycle per applicant
+}
+
+model InfoNightComment {
+  id          Int       @id @default(autoincrement())
+  applicantId Int
+  applicant   Applicant @relation(fields: [applicantId], references: [id])
+  cycleId          Int
+  recruitmentCycle RecruitmentCycle @relation(fields: [cycleId], references: [id])
+  proctorName String
+  proctorPid  String
+  flag        String?
+  comment     String
+  createdAt   DateTime  @default(now())
+  @@unique([applicantId, proctorPid, cycleId])
+}
+
+model CaseStudyScore {
+  id          Int       @id @default(autoincrement())
+  applicantId Int
+  applicant   Applicant @relation(fields: [applicantId], references: [id])
+  cycleId          Int
+  recruitmentCycle RecruitmentCycle @relation(fields: [cycleId], references: [id])
+  proctorName String
+  proctorPid  String
+  communicationScore Float
+  analyticalScore    Float
+  personableScore    Float
+  commitmentScore    Float
+  totalScore         Float
+  rawScores          Json
+  communicationComment String?
+  analyticalComment    String?
+  personableComment    String?
+  commitmentComment    String?
+  createdAt   DateTime  @default(now())
+  @@unique([applicantId, proctorPid, cycleId])
 }

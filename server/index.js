@@ -57,24 +57,30 @@ app.post("/api/application", upload.fields([
     }
 
     // Step 2: Ensure applicant exists
-    let applicant = await prisma.applicant.findUnique({
+    let applicant = await prisma.applicant.findFirst({
       where: {
-        pid_cycleId: { pid, cycleId: cycle.id}, // compound unique
+        cycleId: cycle.id,
+        OR: [
+          pid ? { pid } : undefined,
+          email ? { application: { email } } : undefined,
+          (!pid && !email) ? { name } : undefined
+        ].filter(Boolean),
       },
     });
+    
     if (!applicant) {
       applicant = await prisma.applicant.create({
         data: {
           name,
-          pid,
-          cycleId: cycle.id,
-        },
+          pid: pid || null,
+          cycleId: cycle.id
+        }
       });
     }
 
     // Step 3: Upload files to Supabase
-    const resumePath = `${pid}-${uuidv4()}.pdf`
-    const headshotPath = `${pid}-${uuidv4()}.${headshotFile.mimetype.split("/")[1]}`;
+    const resumePath = `${pid || name}-${uuidv4()}.pdf`
+    const headshotPath = `${pid || name}-${uuidv4()}.${headshotFile.mimetype.split("/")[1]}`
 
     console.log("Uploading resume:", resumeFile?.originalname, resumeFile?.buffer?.length);
     console.log("Uploading headshot:", headshotFile?.originalname, headshotFile?.buffer?.length);
@@ -117,6 +123,7 @@ app.post("/api/application", upload.fields([
       },
     });
 
+
     res.status(201).json({ message: "Application submitted!", application });
   } catch (err) {
     console.error("Error processing application:", err);
@@ -158,11 +165,12 @@ app.get("/api/application/:id/files", async (req, res) => {
 });
 
 app.post("/api/attendance", async (req, res) => {
-  const { name, pid, eventName, recruitmentCycleLabel, eventDate } = req.body;
+  const { name, pid, email, eventName, recruitmentCycleLabel, eventDate } = req.body;
 
   // Basic field validation
-  if (!name || !pid || !eventName || !recruitmentCycleLabel || !eventDate) {
-    return res.status(400).json({ error: "All fields are required." });
+  //removed pid requirement
+  if (!name || !eventName || !recruitmentCycleLabel || !eventDate) {
+    return res.status(400).json({ error: "Name, event name, recruitment cycle, and event date are required." });
   }
 
   try {
@@ -195,11 +203,15 @@ app.post("/api/attendance", async (req, res) => {
       });
     }
 
-    // 3. Check for existing applicant with same PID in this cycle
+    // 3. Find existing applicant in this cycle by PID (if provided) or by name
     let applicant = await prisma.applicant.findFirst({
       where: {
-        pid,
-        cycleId: cycle.id
+        cycleId: cycle.id,
+        OR: [
+          pid ? { pid } : undefined,
+          email ? { application: { email } } : undefined,
+          (!pid && !email) ? { name } : undefined
+        ].filter(Boolean)
       }
     });
 
@@ -208,7 +220,7 @@ app.post("/api/attendance", async (req, res) => {
       applicant = await prisma.applicant.create({
         data: {
           name,
-          pid,
+          pid: pid || null,
           cycleId: cycle.id
         }
       });
@@ -273,10 +285,10 @@ app.post("/api/scoring/auth", requireConsultantAuth, (req, res) => {
 // GET /api/scoring/validate-attendance - Check candidate attendance for an event
 app.get("/api/scoring/validate-attendance", requireConsultantAuth, async (req, res) => {
   try {
-    const { pid, eventName } = req.query;
+    const { pid, name,email, eventName } = req.query;
 
-    if (!pid || !eventName) {
-      return res.status(400).json({ error: "pid and eventName are required." });
+    if ((!pid && !name && !email) || !eventName) {
+      return res.status(400).json({ error: "pid, name, or email, and eventName are required." });
     }
 
     const cycleLabel = getCurrentRecruitmentCycle();
@@ -289,8 +301,15 @@ app.get("/api/scoring/validate-attendance", requireConsultantAuth, async (req, r
       return res.status(404).json({ error: "No active recruitment cycle found." });
     }
 
-    const applicant = await prisma.applicant.findUnique({
-      where: { pid_cycleId: { pid, cycleId: cycle.id } },
+    const applicant = await prisma.applicant.findFirst({
+      where: {
+        cycleId: cycle.id,
+        OR: [
+          pid ? { pid } : undefined,
+          email ? { application: { email } } : undefined,
+          (!pid && !email && name) ? { name } : undefined,
+        ].filter(Boolean)
+      },
     });
 
     if (!applicant) {
@@ -325,14 +344,14 @@ app.get("/api/scoring/validate-attendance", requireConsultantAuth, async (req, r
 // POST /api/scoring/info-night - Submit Info Night comment
 app.post("/api/scoring/info-night", requireConsultantAuth, async (req, res) => {
   try {
-    const { candidatePid, proctorName, proctorPid, flag, comment } = req.body;
+    const { candidatePid, candidateName, candidateEmail, proctorName, proctorPid, flag, comment } = req.body;
 
     if (!comment) {
       return res.status(400).json({ error: "Comment is required." });
     }
 
-    if (!candidatePid || !proctorName || !proctorPid) {
-      return res.status(400).json({ error: "candidatePid, proctorName, and proctorPid are required." });
+    if ((!candidatePid && !candidateName && !candidateEmail) || !proctorName || !proctorPid) {
+      return res.status(400).json({ error: "candidatePid, candidateName, or candidateEmail, plus proctorName and proctorPid are required." });
     }
 
     const cycleLabel = getCurrentRecruitmentCycle();
@@ -345,8 +364,15 @@ app.post("/api/scoring/info-night", requireConsultantAuth, async (req, res) => {
       return res.status(404).json({ error: "No active recruitment cycle found." });
     }
 
-    const applicant = await prisma.applicant.findUnique({
-      where: { pid_cycleId: { pid: candidatePid, cycleId: cycle.id } },
+    const applicant = await prisma.applicant.findFirst({
+      where: {
+        cycleId: cycle.id,
+        OR: [
+          candidatePid ? { pid: candidatePid } : undefined,
+          candidateEmail ? { application: { email: candidateEmail } } : undefined,
+          candidateName ? { name: candidateName } : undefined,
+        ].filter(Boolean),
+      },
     });
 
     if (!applicant) {
@@ -428,10 +454,19 @@ app.post("/api/scoring/case-study", requireConsultantAuth, async (req, res) => {
     const upsertOperations = [];
 
     for (const candidate of candidates) {
-      const { candidatePid, rawScores, communicationComment, analyticalComment, personableComment, commitmentComment } = candidate;
+      const {
+        candidatePid,
+        candidateName,
+        candidateEmail,
+        rawScores,
+        communicationComment,
+        analyticalComment,
+        personableComment,
+        commitmentComment
+      } = candidate;
 
-      if (!candidatePid || !rawScores) {
-        return res.status(400).json({ error: "Each candidate must have candidatePid and rawScores." });
+      if ((!candidatePid && !candidateName && !candidateEmail) || !rawScores) {
+        return res.status(400).json({ error: "Each candidate must have candidatePid, candidateName, or candidateEmail, and rawScores." });
       }
 
       const categories = ["communication", "analytical", "personable", "commitment"];
@@ -451,12 +486,21 @@ app.post("/api/scoring/case-study", requireConsultantAuth, async (req, res) => {
         }
       }
 
-      const applicant = await prisma.applicant.findUnique({
-        where: { pid_cycleId: { pid: candidatePid, cycleId: cycle.id } },
+      const applicant = await prisma.applicant.findFirst({
+        where: {
+          cycleId: cycle.id,
+          OR: [
+            candidatePid ? { pid: candidatePid } : undefined,
+            candidateEmail ? { application: { email: candidateEmail } } : undefined,
+            candidateName ? { name: candidateName } : undefined,
+          ].filter(Boolean),
+        },
       });
 
+      const identifier = candidatePid || candidateEmail || candidateName;
+
       if (!applicant) {
-        return res.status(404).json({ error: `Applicant with PID ${candidatePid} not found.` });
+        return res.status(404).json({ error: `Applicant ${identifier} not found.` });
       }
 
       const attendance = await prisma.attendance.findFirst({
@@ -464,7 +508,7 @@ app.post("/api/scoring/case-study", requireConsultantAuth, async (req, res) => {
       });
 
       if (!attendance) {
-        return res.status(404).json({ error: `Candidate ${candidatePid} has no attendance record for Case Study Night.` });
+        return res.status(404).json({ error: `Candidate ${identifier} has no attendance record for Case Study Night.` });
       }
 
       const computeAverage = (categoryScores) => {

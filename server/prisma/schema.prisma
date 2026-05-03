@@ -20,7 +20,7 @@ model RecruitmentCycle {
 model Applicant {
   id               Int              @id @default(autoincrement())
   name             String
-  pid              String
+  pid              String?
   cycleId          Int
   recruitmentCycle RecruitmentCycle @relation(fields: [cycleId], references: [id])
   attendances      Attendance[]
@@ -62,7 +62,7 @@ enum Track {
 model Application {
   id Int @id @default(autoincrement())
 
-  applicantId Int       @unique
+  applicantId Int       
   applicant   Applicant @relation(fields: [applicantId], references: [id])
 
   cycleId          Int

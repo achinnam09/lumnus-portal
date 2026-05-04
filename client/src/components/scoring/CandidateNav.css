@@ -1,6 +1,4 @@
-/* ============================
-   CandidateNav.css
-   ============================ */
+/* Candidate nav — navy & white */
 
 .candidate-nav {
   display: flex;
@@ -11,27 +9,27 @@
   flex-wrap: wrap;
 }
 
-/* Arrow buttons */
 .candidate-nav__arrow {
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  border: 1px solid #cbd5e0;
-  background-color: #f1f5f9;
-  color: #1e293b;
+  border: 1px solid var(--color-border);
+  background-color: #e8edf5;
+  color: var(--color-text);
   font-size: 1rem;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
   padding: 0;
+  font-family: inherit;
 }
 
 .candidate-nav__arrow:hover:not(:disabled) {
-  background-color: #2563eb;
-  border-color: #2563eb;
-  color: white;
+  background-color: var(--color-accent);
+  border-color: var(--color-accent);
+  color: var(--color-surface);
 }
 
 .candidate-nav__arrow:disabled {
@@ -39,11 +37,10 @@
   cursor: not-allowed;
 }
 
-/* Candidate label */
 .candidate-nav__label {
   font-weight: 600;
   font-size: 1rem;
-  color: #1e293b;
+  color: var(--color-text);
   text-align: center;
   min-width: 200px;
   display: flex;
@@ -52,48 +49,47 @@
   gap: 0.5rem;
 }
 
-/* Validated dot */
 .candidate-nav__dot {
   display: inline-block;
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  background-color: #22c55e;
+  background-color: #2e7d32;
   flex-shrink: 0;
 }
 
-/* Add button */
 .candidate-nav__add {
   padding: 0.4rem 0.75rem;
-  border-radius: 8px;
-  border: 1px solid #bbf7d0;
-  background-color: #f0fdf4;
-  color: #15803d;
+  border-radius: var(--radius-sm);
+  border: 1px solid #a5d6a7;
+  background-color: #e8f5e9;
+  color: #1b5e20;
   font-weight: 600;
   font-size: 0.875rem;
   cursor: pointer;
-  transition: background-color 0.2s ease-in-out;
+  font-family: inherit;
+  transition: background-color 0.2s ease;
 }
 
 .candidate-nav__add:hover {
-  background-color: #dcfce7;
+  background-color: #c8e6c9;
 }
 
-/* Remove button */
 .candidate-nav__remove {
   padding: 0.4rem 0.75rem;
-  border-radius: 8px;
-  border: 1px solid #fecaca;
-  background-color: #fef2f2;
-  color: #dc2626;
+  border-radius: var(--radius-sm);
+  border: 1px solid #ef9a9a;
+  background-color: #ffebee;
+  color: #b71c1c;
   font-weight: 600;
   font-size: 0.875rem;
   cursor: pointer;
-  transition: background-color 0.2s ease-in-out;
+  font-family: inherit;
+  transition: background-color 0.2s ease;
 }
 
 .candidate-nav__remove:hover:not(:disabled) {
-  background-color: #fee2e2;
+  background-color: #ffcdd2;
 }
 
 .candidate-nav__remove:disabled {

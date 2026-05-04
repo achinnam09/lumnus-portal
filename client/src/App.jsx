@@ -10,11 +10,14 @@ import "./App.css";
 
 function App() {
   return (
-    <div className="app-wrapper">
-      {/* Page title + top navigation */}
-      <header>
-        <h1 className="main-title">Lumnus Recruiting Portal</h1>
-        <Navbar />
+    <div className="app-root">
+      <header className="app-header">
+        <div className="app-header__inner">
+          <div className="app-header__bar">
+            <h1 className="main-title">Lumnus Recruiting</h1>
+            <Navbar />
+          </div>
+        </div>
       </header>
 
       <main className="page-content">

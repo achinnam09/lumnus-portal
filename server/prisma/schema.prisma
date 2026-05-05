@@ -20,17 +20,17 @@ model RecruitmentCycle {
 model Applicant {
   id               Int              @id @default(autoincrement())
   name             String
-  pid              String?
+  email            String
   cycleId          Int
   recruitmentCycle RecruitmentCycle @relation(fields: [cycleId], references: [id])
   attendances      Attendance[]
 
-  application Application?
+  applications Application[]
 
   infoNightComments  InfoNightComment[]
   caseStudyScores    CaseStudyScore[]
 
-  @@unique([pid, cycleId]) // prevents multiple same-PID per recruitment cycle
+  @@unique([email, cycleId])
 }
 
 model Event {
@@ -89,12 +89,12 @@ model InfoNightComment {
   applicant   Applicant @relation(fields: [applicantId], references: [id])
   cycleId          Int
   recruitmentCycle RecruitmentCycle @relation(fields: [cycleId], references: [id])
-  proctorName String
-  proctorPid  String
-  flag        String?
-  comment     String
-  createdAt   DateTime  @default(now())
-  @@unique([applicantId, proctorPid, cycleId])
+  proctorName  String
+  proctorEmail String
+  flag         String?
+  comment      String
+  createdAt    DateTime  @default(now())
+  @@unique([applicantId, proctorEmail, cycleId])
 }
 
 model CaseStudyScore {
@@ -103,8 +103,8 @@ model CaseStudyScore {
   applicant   Applicant @relation(fields: [applicantId], references: [id])
   cycleId          Int
   recruitmentCycle RecruitmentCycle @relation(fields: [cycleId], references: [id])
-  proctorName String
-  proctorPid  String
+  proctorName  String
+  proctorEmail String
   communicationScore Float
   analyticalScore    Float
   personableScore    Float
@@ -115,6 +115,6 @@ model CaseStudyScore {
   analyticalComment    String?
   personableComment    String?
   commitmentComment    String?
-  createdAt   DateTime  @default(now())
-  @@unique([applicantId, proctorPid, cycleId])
+  createdAt    DateTime  @default(now())
+  @@unique([applicantId, proctorEmail, cycleId])
 }

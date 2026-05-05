@@ -49,7 +49,7 @@ const CATEGORY_KEYS = Object.keys(CATEGORIES);
 
 function createBlankCandidate() {
   return {
-    pid: "",
+    email: "",
     name: "",
     validated: false,
     rawScores: {
@@ -93,7 +93,7 @@ function computeScores(candidate) {
   return { categoryScores, totalScore };
 }
 
-const CaseStudyForm = ({ proctorName, proctorPid }) => {
+const CaseStudyForm = ({ proctorName, proctorEmail }) => {
   const [candidates, setCandidates] = useState([createBlankCandidate()]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [submitting, setSubmitting] = useState(false);
@@ -144,14 +144,14 @@ const CaseStudyForm = ({ proctorName, proctorPid }) => {
 
   const handleValidate = async () => {
     setValidationError("");
-    const pid = current.pid.trim();
-    if (!pid) {
-      setValidationError("Please enter a PID.");
+    const email = current.email.trim();
+    if (!email) {
+      setValidationError("Please enter an email.");
       return;
     }
 
     try {
-      const res = await validateAttendance(pid, "Case Study Night");
+      const res = await validateAttendance(email, "Case Study Night");
       updateCandidate(currentIndex, { name: res.data.applicant.name, validated: true });
     } catch (err) {
       const msg = err.response?.data?.error || "Failed to validate attendance.";
@@ -205,7 +205,7 @@ const CaseStudyForm = ({ proctorName, proctorPid }) => {
 
     const payload = {
       proctorName,
-      proctorPid,
+      proctorEmail,
       candidates: candidates.map((c) => {
         const convertedScores = {};
         for (const catKey of CATEGORY_KEYS) {
@@ -217,7 +217,7 @@ const CaseStudyForm = ({ proctorName, proctorPid }) => {
         }
 
         return {
-          candidatePid: c.pid,
+          candidateEmail: c.email,
           candidateName: c.name,
           rawScores: convertedScores,
           communicationComment: c.communicationComment || null,
@@ -269,12 +269,12 @@ const CaseStudyForm = ({ proctorName, proctorPid }) => {
 
         {!current.validated ? (
           <div className="case-study-form__validate">
-            <label>Candidate PID:</label>
+            <label>Candidate Email:</label>
             <input
-              type="text"
-              value={current.pid}
-              onChange={(e) => updateCandidate(currentIndex, { pid: e.target.value })}
-              placeholder="Enter PID"
+              type="email"
+              value={current.email}
+              onChange={(e) => updateCandidate(currentIndex, { email: e.target.value })}
+              placeholder="Enter email"
             />
             <button type="button" onClick={handleValidate}>
               Validate Attendance

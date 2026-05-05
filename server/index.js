@@ -32,7 +32,7 @@ app.post("/api/application", upload.fields([
 ]), async(req, res) => {
   try {
     const {
-      name, pid, email, year, major, minor, track,
+      name, email, year, major, minor, track,
       essay1, essay2, heardFrom, recruitmentCycleLabel
     } = req.body;
 
@@ -58,29 +58,18 @@ app.post("/api/application", upload.fields([
 
     // Step 2: Ensure applicant exists
     let applicant = await prisma.applicant.findFirst({
-      where: {
-        cycleId: cycle.id,
-        OR: [
-          pid ? { pid } : undefined,
-          email ? { application: { email } } : undefined,
-          (!pid && !email) ? { name } : undefined
-        ].filter(Boolean),
-      },
+      where: { email, cycleId: cycle.id },
     });
-    
+
     if (!applicant) {
       applicant = await prisma.applicant.create({
-        data: {
-          name,
-          pid: pid || null,
-          cycleId: cycle.id
-        }
+        data: { name, email, cycleId: cycle.id }
       });
     }
 
     // Step 3: Upload files to Supabase
-    const resumePath = `${pid || name}-${uuidv4()}.pdf`
-    const headshotPath = `${pid || name}-${uuidv4()}.${headshotFile.mimetype.split("/")[1]}`
+    const resumePath = `${email}-${uuidv4()}.pdf`
+    const headshotPath = `${email}-${uuidv4()}.${headshotFile.mimetype.split("/")[1]}`
 
     console.log("Uploading resume:", resumeFile?.originalname, resumeFile?.buffer?.length);
     console.log("Uploading headshot:", headshotFile?.originalname, headshotFile?.buffer?.length);
@@ -165,12 +154,10 @@ app.get("/api/application/:id/files", async (req, res) => {
 });
 
 app.post("/api/attendance", async (req, res) => {
-  const { name, pid, email, eventName, recruitmentCycleLabel, eventDate } = req.body;
+  const { name, email, eventName, recruitmentCycleLabel, eventDate } = req.body;
 
-  // Basic field validation
-  //removed pid requirement
-  if (!name || !eventName || !recruitmentCycleLabel || !eventDate) {
-    return res.status(400).json({ error: "Name, event name, recruitment cycle, and event date are required." });
+  if (!name || !email || !eventName || !recruitmentCycleLabel || !eventDate) {
+    return res.status(400).json({ error: "Name, email, event name, recruitment cycle, and event date are required." });
   }
 
   try {
@@ -203,26 +190,20 @@ app.post("/api/attendance", async (req, res) => {
       });
     }
 
-    // 3. Find existing applicant in this cycle by PID (if provided) or by name
+    // 3. Find existing applicant in this cycle by email, fall back to name
     let applicant = await prisma.applicant.findFirst({
       where: {
         cycleId: cycle.id,
         OR: [
-          pid ? { pid } : undefined,
-          email ? { application: { email } } : undefined,
-          (!pid && !email) ? { name } : undefined
-        ].filter(Boolean)
+          { email },
+          { name },
+        ]
       }
     });
 
-    // If applicant exists, reuse it. If not, create a new one
     if (!applicant) {
       applicant = await prisma.applicant.create({
-        data: {
-          name,
-          pid: pid || null,
-          cycleId: cycle.id
-        }
+        data: { name, email, cycleId: cycle.id }
       });
     }
 
@@ -285,10 +266,10 @@ app.post("/api/scoring/auth", requireConsultantAuth, (req, res) => {
 // GET /api/scoring/validate-attendance - Check candidate attendance for an event
 app.get("/api/scoring/validate-attendance", requireConsultantAuth, async (req, res) => {
   try {
-    const { pid, name,email, eventName } = req.query;
+    const { email, name, eventName } = req.query;
 
-    if ((!pid && !name && !email) || !eventName) {
-      return res.status(400).json({ error: "pid, name, or email, and eventName are required." });
+    if ((!email && !name) || !eventName) {
+      return res.status(400).json({ error: "email or name, and eventName are required." });
     }
 
     const cycleLabel = getCurrentRecruitmentCycle();
@@ -305,9 +286,8 @@ app.get("/api/scoring/validate-attendance", requireConsultantAuth, async (req, r
       where: {
         cycleId: cycle.id,
         OR: [
-          pid ? { pid } : undefined,
-          email ? { application: { email } } : undefined,
-          (!pid && !email && name) ? { name } : undefined,
+          email ? { email } : undefined,
+          name ? { name } : undefined,
         ].filter(Boolean)
       },
     });
@@ -334,7 +314,7 @@ app.get("/api/scoring/validate-attendance", requireConsultantAuth, async (req, r
 
     res.json({
       valid: true,
-      applicant: { id: applicant.id, name: applicant.name, pid: applicant.pid },
+      applicant: { id: applicant.id, name: applicant.name, email: applicant.email },
     });
   } catch (err) {
     res.status(500).json({ error: "Internal server error." });
@@ -344,14 +324,14 @@ app.get("/api/scoring/validate-attendance", requireConsultantAuth, async (req, r
 // POST /api/scoring/info-night - Submit Info Night comment
 app.post("/api/scoring/info-night", requireConsultantAuth, async (req, res) => {
   try {
-    const { candidatePid, candidateName, candidateEmail, proctorName, proctorPid, flag, comment } = req.body;
+    const { candidateName, candidateEmail, proctorName, proctorEmail, flag, comment } = req.body;
 
     if (!comment) {
       return res.status(400).json({ error: "Comment is required." });
     }
 
-    if ((!candidatePid && !candidateName && !candidateEmail) || !proctorName || !proctorPid) {
-      return res.status(400).json({ error: "candidatePid, candidateName, or candidateEmail, plus proctorName and proctorPid are required." });
+    if ((!candidateName && !candidateEmail) || !proctorName || !proctorEmail) {
+      return res.status(400).json({ error: "candidateName or candidateEmail, plus proctorName and proctorEmail are required." });
     }
 
     const cycleLabel = getCurrentRecruitmentCycle();
@@ -368,8 +348,7 @@ app.post("/api/scoring/info-night", requireConsultantAuth, async (req, res) => {
       where: {
         cycleId: cycle.id,
         OR: [
-          candidatePid ? { pid: candidatePid } : undefined,
-          candidateEmail ? { application: { email: candidateEmail } } : undefined,
+          candidateEmail ? { email: candidateEmail } : undefined,
           candidateName ? { name: candidateName } : undefined,
         ].filter(Boolean),
       },
@@ -397,9 +376,9 @@ app.post("/api/scoring/info-night", requireConsultantAuth, async (req, res) => {
 
     const record = await prisma.infoNightComment.upsert({
       where: {
-        applicantId_proctorPid_cycleId: {
+        applicantId_proctorEmail_cycleId: {
           applicantId: applicant.id,
-          proctorPid,
+          proctorEmail,
           cycleId: cycle.id,
         },
       },
@@ -412,7 +391,7 @@ app.post("/api/scoring/info-night", requireConsultantAuth, async (req, res) => {
         applicantId: applicant.id,
         cycleId: cycle.id,
         proctorName,
-        proctorPid,
+        proctorEmail,
         flag: flag || null,
         comment,
       },
@@ -427,10 +406,10 @@ app.post("/api/scoring/info-night", requireConsultantAuth, async (req, res) => {
 // POST /api/scoring/case-study - Submit Case Study scores (batch)
 app.post("/api/scoring/case-study", requireConsultantAuth, async (req, res) => {
   try {
-    const { proctorName, proctorPid, candidates } = req.body;
+    const { proctorName, proctorEmail, candidates } = req.body;
 
-    if (!proctorName || !proctorPid || !Array.isArray(candidates) || candidates.length === 0) {
-      return res.status(400).json({ error: "proctorName, proctorPid, and a non-empty candidates array are required." });
+    if (!proctorName || !proctorEmail || !Array.isArray(candidates) || candidates.length === 0) {
+      return res.status(400).json({ error: "proctorName, proctorEmail, and a non-empty candidates array are required." });
     }
 
     const cycleLabel = getCurrentRecruitmentCycle();
@@ -455,7 +434,6 @@ app.post("/api/scoring/case-study", requireConsultantAuth, async (req, res) => {
 
     for (const candidate of candidates) {
       const {
-        candidatePid,
         candidateName,
         candidateEmail,
         rawScores,
@@ -465,8 +443,8 @@ app.post("/api/scoring/case-study", requireConsultantAuth, async (req, res) => {
         commitmentComment
       } = candidate;
 
-      if ((!candidatePid && !candidateName && !candidateEmail) || !rawScores) {
-        return res.status(400).json({ error: "Each candidate must have candidatePid, candidateName, or candidateEmail, and rawScores." });
+      if ((!candidateName && !candidateEmail) || !rawScores) {
+        return res.status(400).json({ error: "Each candidate must have candidateName or candidateEmail, and rawScores." });
       }
 
       const categories = ["communication", "analytical", "personable", "commitment"];
@@ -490,14 +468,13 @@ app.post("/api/scoring/case-study", requireConsultantAuth, async (req, res) => {
         where: {
           cycleId: cycle.id,
           OR: [
-            candidatePid ? { pid: candidatePid } : undefined,
-            candidateEmail ? { application: { email: candidateEmail } } : undefined,
+            candidateEmail ? { email: candidateEmail } : undefined,
             candidateName ? { name: candidateName } : undefined,
           ].filter(Boolean),
         },
       });
 
-      const identifier = candidatePid || candidateEmail || candidateName;
+      const identifier = candidateEmail || candidateName;
 
       if (!applicant) {
         return res.status(404).json({ error: `Applicant ${identifier} not found.` });
@@ -529,9 +506,9 @@ app.post("/api/scoring/case-study", requireConsultantAuth, async (req, res) => {
       upsertOperations.push(
         prisma.caseStudyScore.upsert({
           where: {
-            applicantId_proctorPid_cycleId: {
+            applicantId_proctorEmail_cycleId: {
               applicantId: applicant.id,
-              proctorPid,
+              proctorEmail,
               cycleId: cycle.id,
             },
           },
@@ -552,7 +529,7 @@ app.post("/api/scoring/case-study", requireConsultantAuth, async (req, res) => {
             applicantId: applicant.id,
             cycleId: cycle.id,
             proctorName,
-            proctorPid,
+            proctorEmail,
             communicationScore,
             analyticalScore,
             personableScore,

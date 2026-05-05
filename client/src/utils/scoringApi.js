@@ -9,8 +9,8 @@ function getHeaders() {
 export const checkAuth = (password) =>
   axios.post(`${BASE}/auth`, {}, { headers: { "x-consultant-password": password } });
 
-export const validateAttendance = (pid, eventName) =>
-  axios.get(`${BASE}/validate-attendance`, { params: { pid, eventName }, headers: getHeaders() });
+export const validateAttendance = (email, eventName) =>
+  axios.get(`${BASE}/validate-attendance`, { params: { email, eventName }, headers: getHeaders() });
 
 export const submitInfoNight = (data) =>
   axios.post(`${BASE}/info-night`, data, { headers: getHeaders() });

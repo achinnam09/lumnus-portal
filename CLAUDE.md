@@ -98,10 +98,10 @@ Password gate (sessionStorage) → Proctor identity → Event selection → Even
 ### Database Models
 
 - **RecruitmentCycle** → has many Events, Applicants, Applications, InfoNightComments, CaseStudyScores
-- **Applicant** → has one Application per cycle, has many Attendance records, InfoNightComments, CaseStudyScores
+- **Applicant** → has many Applications (one per cycle enforced by unique constraint), has many Attendance records, InfoNightComments, CaseStudyScores
 - **Event** → has many Attendance records
-- **InfoNightComment** → proctor comment + optional red/green flag per candidate per cycle (unique on [applicantId, proctorPid, cycleId])
-- **CaseStudyScore** → weighted scoring across 4 categories (Communication 35%, Analytical 30%, Personable 30%, Commitment 5%) with raw sub-criteria in JSON, computed category averages and total as Float columns (unique on [applicantId, proctorPid, cycleId])
+- **InfoNightComment** → proctor comment + optional red/green flag per candidate per cycle (unique on [applicantId, proctorEmail, cycleId])
+- **CaseStudyScore** → weighted scoring across 4 categories (Communication 35%, Analytical 30%, Personable 30%, Commitment 5%) with raw sub-criteria in JSON, computed category averages and total as Float columns (unique on [applicantId, proctorEmail, cycleId])
 - **Track enum**: Strategy, DataAnalytics
 
 ## Project Structure

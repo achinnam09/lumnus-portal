@@ -8,7 +8,7 @@ const AttendanceForm = () => {
   // Local state to track form inputs
   const [formData, setFormData] = useState({
     name: "",
-    pid: "",
+    email: "",
     event: ""
   });
 
@@ -26,7 +26,7 @@ const AttendanceForm = () => {
 
     const payload = {
       name: formData.name,
-      pid: formData.pid,
+      email: formData.email,
       eventName: formData.event,
       eventDate: new Date().toISOString(),
       recruitmentCycleLabel: getCurrentRecruitmentCycle()
@@ -36,7 +36,7 @@ const AttendanceForm = () => {
       await axios.post("http://localhost:3000/api/attendance", payload);
       alert("Attendance recorded successfully!");
       // Optionally reset form
-      setFormData({ name: "", pid: "", event: "" });
+      setFormData({ name: "", email: "", event: "" });
     } catch (err) {
       const errorMessage =
         err.response?.data?.error || "There was an error submitting the form.";
@@ -61,13 +61,13 @@ const AttendanceForm = () => {
           />
         </div>
 
-        {/* PID input */}
+        {/* Email input */}
         <div className="form-group">
-          <label>PID:</label>
+          <label>Email:</label>
           <input
-            type="text"
-            name="pid"
-            value={formData.pid}
+            type="email"
+            name="email"
+            value={formData.email}
             onChange={handleChange}
             required
           />

@@ -151,7 +151,7 @@ Supporting modules:
 | Model            | Key Fields                                    | Relations                              |
 | ---------------- | --------------------------------------------- | -------------------------------------- |
 | RecruitmentCycle | id, label (unique)                            | has many: Events, Applicants, Applications |
-| Applicant        | id, name, pid, cycleId                        | belongs to: Cycle; has one: Application; has many: Attendance |
+| Applicant        | id, name, email, cycleId                      | belongs to: Cycle; has many: Applications, Attendance |
 | Event            | id, name, date, cycleId                       | belongs to: Cycle; has many: Attendance |
 | Attendance       | id, applicantId, eventId, timestamp           | belongs to: Applicant, Event           |
 | Application      | id, applicantId, cycleId, year, email, major, minor, track, essay1, essay2, resumeUrl, headshotUrl, heardFrom | belongs to: Applicant, Cycle |
@@ -162,7 +162,7 @@ Supporting modules:
 
 ### Unique Constraints
 
-- `Applicant`: `[pid, cycleId]` — one applicant per PID per cycle
+- `Applicant`: `[email, cycleId]` — one applicant per email per cycle
 - `Attendance`: `[applicantId, eventId]` — no double check-ins
 - `Application`: `[applicantId, cycleId]` — one application per cycle per applicant
 

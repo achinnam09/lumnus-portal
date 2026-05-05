@@ -2,8 +2,8 @@ import { useState } from "react";
 import { validateAttendance, submitInfoNight } from "../../utils/scoringApi";
 import "./InfoNightForm.css";
 
-const InfoNightForm = ({ proctorName, proctorPid }) => {
-  const [candidatePid, setCandidatePid] = useState("");
+const InfoNightForm = ({ proctorName, proctorEmail }) => {
+  const [candidateEmail, setCandidateEmail] = useState("");
   const [candidateName, setCandidateName] = useState("");
   const [candidateId, setCandidateId] = useState(null);
   const [validated, setValidated] = useState(false);
@@ -20,12 +20,12 @@ const InfoNightForm = ({ proctorName, proctorPid }) => {
     setError("");
     setSuccess("");
     try {
-      const res = await validateAttendance(candidatePid, "Info Night");
+      const res = await validateAttendance(candidateEmail, "Info Night");
       setCandidateName(res.data.applicant.name);
       setCandidateId(res.data.applicant.id);
       setValidated(true);
     } catch (err) {
-      const msg = err.response?.data?.error || "No attendance record found for this PID.";
+      const msg = err.response?.data?.error || "No attendance record found for this email.";
       setError(msg);
     }
   };
@@ -42,16 +42,16 @@ const InfoNightForm = ({ proctorName, proctorPid }) => {
 
     try {
       await submitInfoNight({
-        candidatePid,
+        candidateEmail,
         candidateName,
         candidateId,
         proctorName,
-        proctorPid,
+        proctorEmail,
         flag,
         comment,
       });
       setSuccess("Score submitted successfully!");
-      setCandidatePid("");
+      setCandidateEmail("");
       setCandidateName("");
       setCandidateId(null);
       setValidated(false);
@@ -66,7 +66,7 @@ const InfoNightForm = ({ proctorName, proctorPid }) => {
   };
 
   const resetForm = () => {
-    setCandidatePid("");
+    setCandidateEmail("");
     setCandidateName("");
     setCandidateId(null);
     setValidated(false);
@@ -87,11 +87,11 @@ const InfoNightForm = ({ proctorName, proctorPid }) => {
       {!validated && (
         <form onSubmit={handleValidate}>
           <div className="scoring-form-group">
-            <label>Candidate PID:</label>
+            <label>Candidate Email:</label>
             <input
-              type="text"
-              value={candidatePid}
-              onChange={(e) => setCandidatePid(e.target.value)}
+              type="email"
+              value={candidateEmail}
+              onChange={(e) => setCandidateEmail(e.target.value)}
               required
             />
           </div>

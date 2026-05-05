@@ -5,7 +5,6 @@ const ApplicationForm = () => {
   const [formData, setFormData] = useState({
     name: "",
     year: "",
-    pid: "",
     email: "",
     major: "",
     minor: "",
@@ -64,18 +63,6 @@ const ApplicationForm = () => {
             <option value="Senior">Senior</option>
             <option value="Transfer">Transfer</option>
           </select>
-        </div>
-
-        {/* ----- PID ----- */}
-        <div>
-          <label>PID:</label><br />
-          <input
-            type="text"
-            name="pid"
-            value={formData.pid}
-            onChange={handleChange}
-            required
-          />
         </div>
 
         {/* ----- UCSD Email ----- */}

@@ -18,7 +18,7 @@ const ConsultantScoring = () => {
   const [authError, setAuthError] = useState("");
 
   const [proctorName, setProctorName] = useState("");
-  const [proctorPid, setProctorPid] = useState("");
+  const [proctorEmail, setProctorEmail] = useState("");
   const [proctorLocked, setProctorLocked] = useState(false);
 
   const [selectedEvent, setSelectedEvent] = useState("");
@@ -57,6 +57,7 @@ const ConsultantScoring = () => {
 
   const handleChangeProctor = () => {
     setProctorLocked(false);
+    setProctorEmail("");
     setSelectedEvent("");
     setEventDropdown("");
   };
@@ -110,11 +111,11 @@ const ConsultantScoring = () => {
           </div>
 
           <div className="scoring-form-group">
-            <label>Your PID:</label>
+            <label>Your Email:</label>
             <input
-              type="text"
-              value={proctorPid}
-              onChange={(e) => setProctorPid(e.target.value)}
+              type="email"
+              value={proctorEmail}
+              onChange={(e) => setProctorEmail(e.target.value)}
               required
             />
           </div>
@@ -173,11 +174,11 @@ const ConsultantScoring = () => {
         </button>
 
         {selectedEvent === "Info Night" && (
-          <InfoNightForm proctorName={proctorName} proctorPid={proctorPid} />
+          <InfoNightForm proctorName={proctorName} proctorEmail={proctorEmail} />
         )}
 
         {selectedEvent === "Case Study Night" && (
-          <CaseStudyForm proctorName={proctorName} proctorPid={proctorPid} />
+          <CaseStudyForm proctorName={proctorName} proctorEmail={proctorEmail} />
         )}
 
         {selectedEvent !== "Info Night" && selectedEvent !== "Case Study Night" && (

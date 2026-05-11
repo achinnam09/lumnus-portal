@@ -17,3 +17,15 @@ export const submitInfoNight = (data) =>
 
 export const submitCaseStudy = (data) =>
   axios.post(`${BASE}/case-study`, data, { headers: getHeaders() });
+
+export const lookupAttendee = (eventName, email) =>
+  axios.get(`${BASE}/lookup-attendee`, { params: { eventName, email }, headers: getHeaders() });
+
+export const submitAssessmentCenter = (data) =>
+  axios.post(`${BASE}/assessment-center`, data, { headers: getHeaders() });
+
+export const lookupByName = (eventName, name, proctorEmail) =>
+  axios.get(`${BASE}/lookup-by-name`, { params: { eventName, name, proctorEmail }, headers: getHeaders() });
+
+export const submitSpeedNetworking = (data) =>
+  axios.post(`${BASE}/speed-networking`, data, { headers: getHeaders() });

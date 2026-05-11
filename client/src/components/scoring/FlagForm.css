@@ -1,0 +1,225 @@
+/* Flag form (Info Night / Speed Networking) — navy & white */
+
+.flag-form {
+  padding: 1.25rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md, 8px);
+  background-color: var(--color-surface);
+}
+
+.flag-form__identity {
+  margin-bottom: 1rem;
+}
+
+.flag-form__resolved {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background-color: #fafbfd;
+}
+
+.flag-form__resolved-name {
+  font-weight: 600;
+  color: var(--color-text);
+  font-size: 1rem;
+}
+
+.flag-form__resolved-email {
+  color: var(--color-muted);
+  font-size: 0.875rem;
+  margin-top: 0.15rem;
+}
+
+.flag-form__change-btn {
+  background: none;
+  border: none;
+  color: var(--color-accent);
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9rem;
+  font-family: inherit;
+  padding: 0;
+  transition: color 0.2s ease;
+}
+
+.flag-form__change-btn:hover {
+  color: var(--color-accent-hover);
+}
+
+.flag-form__picker {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.flag-form__picker-label {
+  margin: 0 0 0.25rem 0;
+  font-weight: 600;
+  color: var(--color-text);
+  font-size: 0.95rem;
+}
+
+.flag-form__picker-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.75rem 0.9rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  cursor: pointer;
+  font-family: inherit;
+  text-align: left;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.flag-form__picker-option:hover {
+  border-color: var(--color-accent);
+  background-color: #fafbfd;
+}
+
+.flag-form__picker-option-name {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.flag-form__picker-option--attendance {
+  display: inline-block;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.flag-form__picker-option--attendance-yes {
+  background-color: #e8f5e9;
+  color: #1b5e20;
+  border: 1px solid #a5d6a7;
+}
+
+.flag-form__picker-option--attendance-no {
+  background-color: #fff3e0;
+  color: #6d4c00;
+  border: 1px solid #ffcc80;
+}
+
+.flag-form__warning {
+  background-color: #fff8e1;
+  border: 1px solid #ffe082;
+  color: #6d4c00;
+  font-size: 0.9rem;
+  padding: 0.75rem 0.9rem;
+  border-radius: var(--radius-sm);
+  margin: 0 0 1rem 0;
+  line-height: 1.4;
+}
+
+.flag-form__flag-section {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+.flag-form__flag-section > label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: var(--color-text);
+}
+
+.flag-form__flag-row {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.flag-form__flag-btn {
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.flag-form__flag-btn--green {
+  border-color: #a5d6a7;
+  color: #1b5e20;
+  background-color: #e8f5e9;
+}
+
+.flag-form__flag-btn--green:hover {
+  background-color: #c8e6c9;
+}
+
+.flag-form__flag-btn--active-green {
+  background-color: #2e7d32;
+  border-color: #2e7d32;
+  color: var(--color-surface);
+}
+
+.flag-form__flag-btn--active-green:hover {
+  background-color: #1b5e20;
+}
+
+.flag-form__flag-btn--red {
+  border-color: #ef9a9a;
+  color: #b71c1c;
+  background-color: #ffebee;
+}
+
+.flag-form__flag-btn--red:hover {
+  background-color: #ffcdd2;
+}
+
+.flag-form__flag-btn--active-red {
+  background-color: #c62828;
+  border-color: #c62828;
+  color: var(--color-surface);
+}
+
+.flag-form__flag-btn--active-red:hover {
+  background-color: #b71c1c;
+}
+
+.flag-form__comment {
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  font-size: 0.95rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  box-sizing: border-box;
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  font-family: inherit;
+  resize: vertical;
+}
+
+.flag-form__comment:focus {
+  outline: none;
+  border-color: var(--color-navy-600);
+  box-shadow: 0 0 0 3px var(--color-focus-ring);
+}
+
+.flag-form__notice {
+  background-color: #fff8e1;
+  border: 1px solid #ffe082;
+  color: #6d4c00;
+  font-size: 0.875rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--radius-sm);
+  margin: 0 0 1rem 0;
+}

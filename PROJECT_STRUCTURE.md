@@ -43,14 +43,26 @@ lumnus-portal/
 │       │   └── react.svg
 │       ├── components/
 │       │   ├── Navbar.jsx        # Top navigation bar
-│       │   └── Navbar.css
-│       └── pages/
-│           ├── ApplicationForm.jsx   # Application submission form
-│           ├── ApplicationForm.css
-│           ├── AttendanceForm.jsx    # Event attendance check-in
-│           ├── AttendanceForm.css
-│           ├── Dashboard.jsx         # Applicant review dashboard
-│           └── Dashboard.css
+│       │   ├── Navbar.css
+│       │   └── scoring/          # Scoring feature components
+│       │       ├── ApplicantScoringForm.jsx  # 1-5 category scoring (Case Study / Assessment Center)
+│       │       ├── ApplicantScoringForm.css
+│       │       ├── FlagForm.jsx              # Flag + comment form (Info Night / Speed Networking)
+│       │       ├── FlagForm.css
+│       │       ├── CandidateNav.jsx          # Multi-candidate carousel nav
+│       │       └── CandidateNav.css
+│       ├── pages/
+│       │   ├── ApplicationForm.jsx   # Application submission form
+│       │   ├── ApplicationForm.css
+│       │   ├── AttendanceForm.jsx    # Event attendance check-in
+│       │   ├── AttendanceForm.css
+│       │   ├── Dashboard.jsx         # Applicant review dashboard
+│       │   ├── Dashboard.css
+│       │   ├── ScoringForm.jsx       # Consultant scoring page (/scoring)
+│       │   └── ScoringForm.css
+│       └── utils/
+│           ├── recruitmentCycle.js   # Shared getCurrentRecruitmentCycle()
+│           └── scoringApi.js         # Axios wrappers with auth header for scoring endpoints
 ├── server/                       # Node.js + Express backend
 │   ├── index.js                  # Express server & all API routes
 │   ├── package.json              # Backend dependencies & scripts
@@ -67,13 +79,6 @@ lumnus-portal/
 └── README.md                     # Project readme
 ```
 
-**Statistics:**
-
-- Directories: ~19
-- Source files: ~40
-- Components: 1 shared (Navbar) + 3 pages
-- Test coverage: none (no test framework configured)
-
 </details>
 
 ---
@@ -82,21 +87,21 @@ lumnus-portal/
 
 ### Frontend (`client/`)
 
-| Script          | Description                      |
-| --------------- | -------------------------------- |
-| `npm run dev`   | Start Vite dev server (port 5173)|
-| `npm run build` | Production build                 |
-| `npm run lint`  | Run ESLint                       |
-| `npm run preview` | Preview production build       |
+| Script            | Description                       |
+| ----------------- | --------------------------------- |
+| `npm run dev`     | Start Vite dev server (port 5173) |
+| `npm run build`   | Production build                  |
+| `npm run lint`    | Run ESLint                        |
+| `npm run preview` | Preview production build          |
 
 ### Backend (`server/`)
 
-| Script          | Description                      |
-| --------------- | -------------------------------- |
-| `npm run dev`   | Start with Nodemon (auto-reload) |
-| `npm start`     | Start production server          |
-| `npx prisma migrate dev` | Create/apply DB migrations |
-| `npx prisma generate`    | Regenerate Prisma client   |
+| Script                    | Description                      |
+| ------------------------- | -------------------------------- |
+| `npm run dev`             | Start with Nodemon (auto-reload) |
+| `npm start`               | Start production server          |
+| `npx prisma migrate dev`  | Create/apply DB migrations       |
+| `npx prisma generate`     | Regenerate Prisma client         |
 
 ---
 
@@ -109,33 +114,46 @@ lumnus-portal/
 
 ### Routes
 
-| Path          | Component          | Description                    |
-| ------------- | ------------------ | ------------------------------ |
-| `/attendance` | AttendanceForm     | Event check-in form            |
-| `/apply`      | ApplicationForm    | Application submission form    |
-| `/dashboard`  | Dashboard          | Applicant review & scoring     |
+| Path          | Component       | Description                             |
+| ------------- | --------------- | --------------------------------------- |
+| `/attendance` | AttendanceForm  | Event check-in form                     |
+| `/apply`      | ApplicationForm | Application submission form             |
+| `/dashboard`  | Dashboard       | Applicant review & scoring              |
+| `/scoring`    | ScoringForm     | Consultant scoring (password-protected) |
 
 ### Components (`client/src/components/`)
 
-- **Navbar.jsx** — Top navigation links to all 3 routes
+- **Navbar.jsx** — Top navigation links to all 4 routes
+- **scoring/ApplicantScoringForm.jsx** — Controlled form for 1–5 category scoring per candidate. Used for Case Study Night and Assessment Center. Email lookup on blur, flag toggle, per-category comments.
+- **scoring/FlagForm.jsx** — Controlled form for flag + comment per candidate. Used for Info Night and Speed Networking. Name-based lookup with multi-result picker, overwrite warning for existing flags.
+- **scoring/CandidateNav.jsx** — Carousel navigation for multi-candidate sessions (add/remove/prev/next).
 
 ### Pages (`client/src/pages/`)
 
-| Page                 | Description                                                                      |
-| -------------------- | -------------------------------------------------------------------------------- |
-| ApplicationForm.jsx  | Multi-field form with resume/headshot uploads, essay word limits, track selection |
-| AttendanceForm.jsx   | Event check-in with auto-detected recruitment cycle, duplicate prevention        |
-| Dashboard.jsx        | Filterable applicant list with inline scoring, status categorization, AI flags   |
+| Page               | Description                                                                       |
+| ------------------ | --------------------------------------------------------------------------------- |
+| ApplicationForm    | Multi-field form with resume/headshot uploads, essay word limits, track selection |
+| AttendanceForm     | Event check-in with auto-detected recruitment cycle, duplicate prevention         |
+| Dashboard          | Filterable applicant list with inline scoring, status categorization, flags       |
+| ScoringForm        | Password gate → intake (proctor + event) → event-specific form                   |
 
-### Backend (`server/`)
+### Backend (`server/index.js`)
 
-Single-file API server (`index.js`) with all routes:
+Single-file API server with all routes:
 
-| Endpoint             | Method | Description                                        |
-| -------------------- | ------ | -------------------------------------------------- |
-| `/`                  | GET    | Health check                                       |
-| `/api/application`   | POST   | Submit application with resume/headshot uploads     |
-| `/api/attendance`    | POST   | Record event attendance                            |
+| Endpoint                            | Method | Description                                                        |
+| ----------------------------------- | ------ | ------------------------------------------------------------------ |
+| `/`                                 | GET    | Health check                                                       |
+| `/api/application`                  | POST   | Submit application with resume/headshot uploads                    |
+| `/api/attendance`                   | POST   | Record event attendance                                            |
+| `/api/scoring/auth`                 | POST   | Validate consultant password                                       |
+| `/api/scoring/validate-attendance`  | GET    | Check attendance by email + event (legacy, used by old flow)       |
+| `/api/scoring/lookup-attendee`      | GET    | Lookup candidate by email + event; returns name + attendance status|
+| `/api/scoring/lookup-by-name`       | GET    | Lookup candidates by name (insensitive contains); returns all matches with attendance + existing flag per proctor |
+| `/api/scoring/info-night`           | POST   | Upsert Info Night flag + comment                                   |
+| `/api/scoring/speed-networking`     | POST   | Upsert Speed Networking flag + comment                             |
+| `/api/scoring/case-study`           | POST   | Batch create Case Study scores (one per proctor per candidate)     |
+| `/api/scoring/assessment-center`    | POST   | Batch create Assessment Center scores (one per proctor per station per candidate) |
 
 Supporting modules:
 
@@ -148,23 +166,29 @@ Supporting modules:
 
 ### Models
 
-| Model            | Key Fields                                    | Relations                              |
-| ---------------- | --------------------------------------------- | -------------------------------------- |
-| RecruitmentCycle | id, label (unique)                            | has many: Events, Applicants, Applications |
-| Applicant        | id, name, email, cycleId                      | belongs to: Cycle; has many: Applications, Attendance |
-| Event            | id, name, date, cycleId                       | belongs to: Cycle; has many: Attendance |
-| Attendance       | id, applicantId, eventId, timestamp           | belongs to: Applicant, Event           |
-| Application      | id, applicantId, cycleId, year, email, major, minor, track, essay1, essay2, resumeUrl, headshotUrl, heardFrom | belongs to: Applicant, Cycle |
+| Model                  | Key Fields                                                        | Unique Constraint                              |
+| ---------------------- | ----------------------------------------------------------------- | ---------------------------------------------- |
+| RecruitmentCycle       | id, label                                                         | label                                          |
+| Applicant              | id, name, email, cycleId                                          | [email, cycleId]                               |
+| Event                  | id, name, date, cycleId                                           | —                                              |
+| Attendance             | id, applicantId, eventId, timestamp                               | [applicantId, eventId]                         |
+| Application            | id, applicantId, cycleId, year, email, major, minor, track, essays, resumeUrl, headshotUrl, heardFrom | [applicantId, cycleId] |
+| InfoNightComment       | id, applicantId, cycleId, proctorName, proctorEmail, flag, comment | [applicantId, proctorEmail, cycleId]          |
+| SpeedNetworkingComment | id, applicantId, cycleId, proctorName, proctorEmail, flag, comment | [applicantId, proctorEmail, cycleId]          |
+| CaseStudyScore         | id, applicantId, cycleId, proctorName, proctorEmail, communicationScore, analyticalScore, personableScore, commitmentScore, totalScore, per-category comments, flag, flagComment | [applicantId, proctorEmail, cycleId] |
+| AssessmentCenterScore  | same as CaseStudyScore + station                                   | [applicantId, proctorEmail, station, cycleId] |
 
 ### Enums
 
 - **Track**: `Strategy`, `DataAnalytics`
 
-### Unique Constraints
+### Scoring model notes
 
-- `Applicant`: `[email, cycleId]` — one applicant per email per cycle
-- `Attendance`: `[applicantId, eventId]` — no double check-ins
-- `Application`: `[applicantId, cycleId]` — one application per cycle per applicant
+- All category scores are **1–5** (Float stored in DB)
+- **CaseStudyScore** weights: Communication 35%, Analytical 30%, Personable 30%, Commitment 5%
+- **AssessmentCenterScore** weights: Communication 29%, Analytical 36%, Personable 29%, Commitment 6%
+- Multiple proctors can independently score the same candidate — uniqueness is per-proctor, not per-candidate
+- Flag/comment forms (**InfoNightComment**, **SpeedNetworkingComment**) use upsert — a proctor can overwrite their own previous entry
 
 ---
 
@@ -187,6 +211,7 @@ Supporting modules:
 - `DATABASE_URL` — PostgreSQL connection string
 - `SUPABASE_URL` — Supabase project URL
 - `SUPABASE_SERVICE_ROLE_KEY` — Supabase service role key
+- `CONSULTANT_PASSWORD` — Shared password for the scoring page
 
 ---
 
@@ -194,7 +219,17 @@ Supporting modules:
 
 ### Find-or-Create Pattern
 
-Both `/api/application` and `/api/attendance` endpoints use a consistent find-or-create pattern for shared entities (RecruitmentCycle, Applicant, Event) — ensuring idempotent record creation without requiring pre-seeded data.
+Used consistently across attendance, case-study, and assessment-center endpoints for shared entities (RecruitmentCycle, Applicant, Event) — ensuring idempotent record creation without requiring pre-seeded data.
+
+### Scoring Flow
+
+```
+ScoringForm (password gate) → intake form (proctor name/email + event [+ station for AC])
+→ FlagForm or ApplicantScoringForm depending on event
+→ CandidateNav carousel for multi-candidate sessions
+→ Axios POST → requireConsultantAuth middleware → find-or-create cycle/event/applicant
+→ Prisma create (scoring) or upsert (flag comments)
+```
 
 ### File Upload Flow
 
@@ -228,22 +263,14 @@ Files are never written to disk; they pass through memory buffers directly to Su
 ### Verification Commands
 
 ```bash
-# Verify frontend structure
-ls client/src/
-ls client/src/components/
-ls client/src/pages/
-
-# Verify backend structure
-ls server/
-ls server/middleware/
-ls server/prisma/
-
-# Check scripts
-cat client/package.json | grep "scripts" -A 10
-cat server/package.json | grep "scripts" -A 10
+# Lint frontend
+cd client && npm run lint
 
 # Validate Prisma schema
 cd server && npx prisma validate
+
+# Build check
+cd client && npm run build
 ```
 
 ---

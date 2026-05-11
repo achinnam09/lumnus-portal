@@ -1,4 +1,4 @@
-/* Consultant scoring — navy & white */
+/* Scoring page — navy & white */
 
 .scoring-page {
   background-color: var(--color-page);
@@ -20,6 +20,10 @@
   border: 1px solid var(--color-border);
   box-sizing: border-box;
   margin-top: 1rem;
+}
+
+.scoring-card--wide {
+  max-width: 760px;
 }
 
 .scoring-title {
@@ -109,6 +113,11 @@
   background-color: var(--color-accent-hover);
 }
 
+.scoring-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 .scoring-button--secondary {
   background-color: #e8edf5;
   color: var(--color-text);
@@ -126,20 +135,12 @@
   font-size: 0.95rem;
   font-weight: 600;
   padding: 0;
-  margin-bottom: 1.25rem;
   font-family: inherit;
   transition: color 0.2s ease;
 }
 
 .scoring-back-link:hover {
   color: var(--color-navy-600);
-}
-
-.scoring-coming-soon {
-  text-align: center;
-  color: var(--color-muted);
-  font-size: 1rem;
-  padding: 2rem 0;
 }
 
 .scoring-error {
@@ -154,4 +155,63 @@
   font-size: 0.9rem;
   margin-top: 0.25rem;
   margin-bottom: 0.5rem;
+}
+
+.scoring-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.scoring-header__meta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: auto;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.scoring-header__event {
+  display: inline-block;
+  background-color: var(--color-navy-700);
+  color: var(--color-surface);
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  letter-spacing: 0.01em;
+}
+
+.scoring-header__station {
+  display: inline-block;
+  background-color: #e8edf5;
+  color: var(--color-navy-700);
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  border: 1px solid var(--color-border);
+}
+
+.scoring-total {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 1.25rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background-color: #fafbfd;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.scoring-total__value {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--color-navy-700);
 }

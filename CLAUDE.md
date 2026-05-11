@@ -54,7 +54,12 @@ No errors. No formatting issues. No compiler warnings.
 1. **Application Submission** - Multi-field form with resume/headshot uploads, essay word limits, track selection (Strategy/Data Analytics)
 2. **Attendance Tracking** - Event check-in with auto-detected recruitment cycle, duplicate prevention
 3. **Applicant Review Dashboard** - Filterable applicant list with inline scoring, status categorization (Accepted/Final Round/Unreviewed/Rejected), red flag indicators
-4. **Consultant Scoring** - Password-protected scoring page for club members to evaluate candidates per event. Hidden route (`/consultant/score`), not in Navbar. Supports Info Night (flag + comment) and Case Study Night (weighted multi-category scoring with multi-candidate carousel). Speed Networking, Assessment Center, and Interview forms are planned but not yet implemented.
+4. **Consultant Scoring** - Password-protected scoring page for club members to evaluate candidates per event. Route `/scoring`, visible in Navbar. Supports four events:
+   - **Info Night** - Name-based candidate lookup, green/red flag + comment (upsert per proctor per candidate per cycle)
+   - **Case Study Night** - 1–5 scores across 4 weighted categories (Communication 35%, Analytical 30%, Personable 30%, Commitment 5%), multi-candidate carousel
+   - **Speed Networking** - Same flag + comment form as Info Night
+   - **Assessment Center** - Same 1–5 category scoring as Case Study Night, with a station selector (Pitch, Logic, Creativity, Estimation). Weights differ: Communication 29%, Analytical 36%, Personable 29%, Commitment 6%
+   - **Interview** - Not yet implemented
 
 ## Architectural Patterns
 
@@ -75,9 +80,10 @@ Form → Axios POST → Express → Prisma DB (cycle/event/applicant lookup/crea
 **Consultant scoring:**
 
 ```
-Password gate (sessionStorage) → Proctor identity → Event selection → Event-specific form
+Password gate (sessionStorage) → Proctor identity + event selection (single intake form)
+→ Event-specific form (FlagForm for Info Night/Speed Networking, ApplicantScoringForm for Case Study/Assessment Center)
 → Axios POST (with x-consultant-password header) → Express (requireConsultantAuth middleware)
-→ Attendance validation → Prisma DB (upsert scoring records)
+→ find-or-create cycle/event/applicant → Prisma DB (create or upsert scoring records)
 ```
 
 ### Frontend Architecture
@@ -97,11 +103,13 @@ Password gate (sessionStorage) → Proctor identity → Event selection → Even
 
 ### Database Models
 
-- **RecruitmentCycle** → has many Events, Applicants, Applications, InfoNightComments, CaseStudyScores
-- **Applicant** → has many Applications (one per cycle enforced by unique constraint), has many Attendance records, InfoNightComments, CaseStudyScores
+- **RecruitmentCycle** → has many Events, Applicants, Applications, InfoNightComments, SpeedNetworkingComments, CaseStudyScores, AssessmentCenterScores
+- **Applicant** → has many Applications (one per cycle enforced by unique constraint), Attendance records, InfoNightComments, SpeedNetworkingComments, CaseStudyScores, AssessmentCenterScores
 - **Event** → has many Attendance records
-- **InfoNightComment** → proctor comment + optional red/green flag per candidate per cycle (unique on [applicantId, proctorEmail, cycleId])
-- **CaseStudyScore** → weighted scoring across 4 categories (Communication 35%, Analytical 30%, Personable 30%, Commitment 5%) with raw sub-criteria in JSON, computed category averages and total as Float columns (unique on [applicantId, proctorEmail, cycleId])
+- **InfoNightComment** → proctor flag (green/red, optional) + required comment per candidate per cycle (unique on [applicantId, proctorEmail, cycleId])
+- **SpeedNetworkingComment** → identical structure to InfoNightComment (unique on [applicantId, proctorEmail, cycleId])
+- **CaseStudyScore** → flat 1–5 scores per category (Communication, Analytical, Personable, Commitment), weighted total, optional per-category comments and flag/flagComment (unique on [applicantId, proctorEmail, cycleId]; multiple proctors can each score the same candidate)
+- **AssessmentCenterScore** → same structure as CaseStudyScore plus a `station` field (Pitch/Logic/Creativity/Estimation). Unique on [applicantId, proctorEmail, station, cycleId]
 - **Track enum**: Strategy, DataAnalytics
 
 ## Project Structure
@@ -113,24 +121,24 @@ lumnus-portal/
       main.jsx            # React entry point
       App.jsx             # Routes and layout
       components/         # Shared components
-        Navbar.jsx        # Navigation (does NOT include scoring route)
+        Navbar.jsx        # Navigation (includes /scoring link)
         scoring/          # Scoring feature components
-          InfoNightForm.jsx/.css
-          CaseStudyForm.jsx/.css
-          CandidateNav.jsx/.css
+          ApplicantScoringForm.jsx/.css  # 1-5 category scoring form (Case Study / Assessment Center)
+          FlagForm.jsx/.css              # Flag + comment form (Info Night / Speed Networking)
+          CandidateNav.jsx/.css          # Multi-candidate carousel nav
       pages/              # Page components
         ApplicationForm.jsx/.css
         AttendanceForm.jsx/.css
         Dashboard.jsx/.css
-        ConsultantScoring.jsx/.css  # Hidden route: /consultant/score
+        ScoringForm.jsx/.css  # Route: /scoring — password gate, intake, event-specific form
       utils/
         recruitmentCycle.js  # Shared getCurrentRecruitmentCycle()
-        scoringApi.js        # Axios wrapper with auth header for scoring endpoints
+        scoringApi.js        # Axios wrappers with auth header for all scoring endpoints
     vite.config.js        # Vite configuration
   server/                 # Node.js + Express backend
     index.js              # Express server and API routes (incl. scoring endpoints)
     supabase.js           # Supabase client init
-    middleware/multer.js   # File upload config
+    middleware/multer.js  # File upload config
     prisma/schema.prisma  # Database schema
 ```
 

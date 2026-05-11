@@ -29,6 +29,14 @@ const Navbar = () => {
             Dashboard
           </NavLink>
         </li>
+        <li>
+          <NavLink
+            to="/scoring"
+            className={({ isActive }) => (isActive ? "navbar__link--active" : undefined)}
+          >
+            Scoring
+          </NavLink>
+        </li>
       </ul>
     </nav>
   );

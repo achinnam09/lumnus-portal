@@ -13,8 +13,10 @@ model RecruitmentCycle {
   events       Event[]
   applicants   Applicant[]
   applications Application[]
-  infoNightComments  InfoNightComment[]
-  caseStudyScores    CaseStudyScore[]
+  infoNightComments       InfoNightComment[]
+  speedNetworkingComments SpeedNetworkingComment[]
+  caseStudyScores         CaseStudyScore[]
+  assessmentCenterScores  AssessmentCenterScore[]
 }
 
 model Applicant {
@@ -27,8 +29,10 @@ model Applicant {
 
   applications Application[]
 
-  infoNightComments  InfoNightComment[]
-  caseStudyScores    CaseStudyScore[]
+  infoNightComments       InfoNightComment[]
+  speedNetworkingComments SpeedNetworkingComment[]
+  caseStudyScores         CaseStudyScore[]
+  assessmentCenterScores  AssessmentCenterScore[]
 
   @@unique([email, cycleId])
 }
@@ -97,6 +101,20 @@ model InfoNightComment {
   @@unique([applicantId, proctorEmail, cycleId])
 }
 
+model SpeedNetworkingComment {
+  id          Int       @id @default(autoincrement())
+  applicantId Int
+  applicant   Applicant @relation(fields: [applicantId], references: [id])
+  cycleId          Int
+  recruitmentCycle RecruitmentCycle @relation(fields: [cycleId], references: [id])
+  proctorName  String
+  proctorEmail String
+  flag         String?
+  comment      String
+  createdAt    DateTime  @default(now())
+  @@unique([applicantId, proctorEmail, cycleId])
+}
+
 model CaseStudyScore {
   id          Int       @id @default(autoincrement())
   applicantId Int
@@ -110,11 +128,36 @@ model CaseStudyScore {
   personableScore    Float
   commitmentScore    Float
   totalScore         Float
-  rawScores          Json
   communicationComment String?
   analyticalComment    String?
   personableComment    String?
   commitmentComment    String?
+  flag         String?
+  flagComment  String?
   createdAt    DateTime  @default(now())
   @@unique([applicantId, proctorEmail, cycleId])
+}
+
+model AssessmentCenterScore {
+  id               Int              @id @default(autoincrement())
+  applicantId      Int
+  applicant        Applicant        @relation(fields: [applicantId], references: [id])
+  cycleId          Int
+  recruitmentCycle RecruitmentCycle @relation(fields: [cycleId], references: [id])
+  proctorName      String
+  proctorEmail     String
+  station          String
+  communicationScore   Float
+  analyticalScore      Float
+  personableScore      Float
+  commitmentScore      Float
+  totalScore           Float
+  communicationComment String?
+  analyticalComment    String?
+  personableComment    String?
+  commitmentComment    String?
+  flag             String?
+  flagComment      String?
+  createdAt        DateTime @default(now())
+  @@unique([applicantId, proctorEmail, station, cycleId])
 }
